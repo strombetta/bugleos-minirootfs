@@ -2,6 +2,10 @@
 
 include config.mk
 
+# Ensure the newly-built cross toolchain is always available to subsequent
+# build steps (musl, GCC final, BusyBox, etc.).
+export PATH:=$(PREFIX)/bin:$(PATH)
+
 .PHONY: all download binutils gcc-bootstrap kernel-headers musl gcc-final busybox rootfs image test clean distclean
 
 all: image

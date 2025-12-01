@@ -28,9 +28,20 @@ fetch() {
     dest=$2
     if [ -f "$dest" ]; then
         echo "Skipping download of $dest (already exists)"
-    else
-        echo "Downloading $url"
-        wget -O "$dest" "$url"
+        return
+    fi
+
+    echo "Downloading $url"
+    if wget -O "$dest" "$url"; then
+        return
+    fi
+
+    # Some environments block HTTPS downloads via proxies. Allow a best-effort
+    # HTTP fallback when ALLOW_HTTP_FALLBACK is set.
+    if [ "${ALLOW_HTTP_FALLBACK:-1}" = "1" ] && printf '%s' "$url" | grep -q '^https://'; then
+        fallback_url="http://${url#https://}"
+        echo "HTTPS download failed, retrying via $fallback_url" >&2
+        wget -O "$dest" "$fallback_url"
     fi
 }
 

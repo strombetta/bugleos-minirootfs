@@ -23,6 +23,11 @@ sudo apt-get install build-essential wget bison flex texinfo bc git python3 gawk
    ```
    make test
    ```
+
+   If your network proxy blocks HTTPS downloads, re-run with an HTTP fallback:
+   ```
+   ALLOW_HTTP_FALLBACK=1 make test
+   ```
 4. Import into WSL from Windows PowerShell:
    ```
    wsl --import BugleOS C:\\WSL\\BugleOS bugleos-minirootfs-wsl.tar.gz
