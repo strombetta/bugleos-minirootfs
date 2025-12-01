@@ -19,6 +19,8 @@ mkdir -p "$BUILD_DIR"
 tar -xf "$SRC_ARCHIVE" -C "$BUILD_DIR" --strip-components=1
 cd "$BUILD_DIR"
 
+export PATH="$PREFIX/bin:$PATH"
+
 CC="${PREFIX}/bin/${TARGET}-gcc" ./configure \
     --prefix=/usr \
     --target="$TARGET"
