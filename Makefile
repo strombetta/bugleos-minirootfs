@@ -8,10 +8,12 @@ all: image
 
 # Download all sources
 SCRIPTS:=scripts
-download: $(SOURCES)
-	@mkdir -p $(SOURCES)
+download: | $(SOURCES)
 	@sh $(SCRIPTS)/download_sources.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" \
-	  "$(BINUTILS_VERSION)" "$(GCC_VERSION)" "$(LINUX_VERSION)" "$(MUSL_VERSION)" "$(BUSYBOX_VERSION)"
+  "$(BINUTILS_VERSION)" "$(GCC_VERSION)" "$(LINUX_VERSION)" "$(MUSL_VERSION)" "$(BUSYBOX_VERSION)"
+
+$(SOURCES):
+	@mkdir -p $@
 
 binutils: download
 	@sh $(SCRIPTS)/build_binutils.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(BINUTILS_VERSION)"
