@@ -16,13 +16,13 @@ $(SOURCES):
 	@mkdir -p $@
 
 binutils: download
-        @sh $(SCRIPTS)/build_binutils.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(BINUTILS_VERSION)"
+	@sh $(SCRIPTS)/build_binutils.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(BINUTILS_VERSION)"
 
 kernel-headers: download
-        @sh $(SCRIPTS)/install_kernel_headers.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(LINUX_VERSION)"
+	@sh $(SCRIPTS)/install_kernel_headers.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(LINUX_VERSION)"
 
 gcc-bootstrap: binutils kernel-headers
-        @sh $(SCRIPTS)/build_gcc_bootstrap.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(GCC_VERSION)"
+	@sh $(SCRIPTS)/build_gcc_bootstrap.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(GCC_VERSION)"
 
 musl: gcc-bootstrap kernel-headers
 	@sh $(SCRIPTS)/build_musl.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(MUSL_VERSION)"
