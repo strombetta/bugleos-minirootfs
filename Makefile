@@ -56,7 +56,7 @@ test: image
 
 # Cleaning
 clean:
-	rm -rf $(BUILD)/binutils $(BUILD)/gcc-bootstrap $(BUILD)/gcc-final $(BUILD)/musl $(BUILD)/busybox $(ROOTFS)
+	rm -rf $(BUILD)/binutils $(BUILD)/kernel-headers $(BUILD)/gcc-bootstrap $(BUILD)/gcc-final $(BUILD)/musl $(BUILD)/busybox $(ROOTFS)
 
 # Be careful with distclean; keep sources by default
 # Remove toolchain and sysroot as well
