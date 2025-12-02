@@ -15,6 +15,9 @@ SOURCES=$5
 BUILD=$6
 LINUX_VERSION=$7
 
+# BUILD_ARCH is provided by the Makefile to avoid redefinition here.
+: "${BUILD_ARCH:?BUILD_ARCH must be set}"
+
 SRC_ARCHIVE="${SOURCES}/linux-${LINUX_VERSION}.tar.xz"
 BUILD_DIR="${BUILD}/linux-headers"
 
@@ -24,4 +27,4 @@ mkdir -p "$BUILD_DIR"
 tar -xf "$SRC_ARCHIVE" -C "$BUILD_DIR" --strip-components=1
 cd "$BUILD_DIR"
 
-make ARCH=x86_64 INSTALL_HDR_PATH="$SYSROOT/usr" headers_install
+make ARCH="$BUILD_ARCH" INSTALL_HDR_PATH="$SYSROOT/usr" headers_install

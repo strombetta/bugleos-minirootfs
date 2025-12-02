@@ -2,6 +2,9 @@
 
 include config.mk
 
+HOST_ARCH ?= $(shell uname -m)
+BUILD_ARCH ?= $(if $(ARCH),$(ARCH),$(HOST_ARCH))
+
 .PHONY: all download binutils gcc-bootstrap kernel-headers musl gcc-final busybox rootfs image test clean distclean
 
 all: image
