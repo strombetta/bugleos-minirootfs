@@ -18,18 +18,17 @@ BUILD=$6
 GCC_VERSION=$7
 
 SRC_ARCHIVE="${SOURCES}/gcc-${GCC_VERSION}.tar.xz"
+SOURCE_DIR="$(SOURCES)/gcc-${GCC_VERSION}"
 BUILD_DIR="${BUILD}/gcc-bootstrap"
 
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
-tar -xf "$SRC_ARCHIVE" -C "$BUILD_DIR" --strip-components=1
-
-# (cd "$BUILD_DIR" && ./contrib/download_prerequisites)
+tar -xf "$SRC_ARCHIVE" -C "$SOURCE_DIR" --strip-components=1
 
 cd "$BUILD_DIR"
 
-./configure \
+$SOURCE_DIR/configure \
     --target="$TARGET" \
     --prefix="$PREFIX" \
     --with-sysroot="$SYSROOT" \
