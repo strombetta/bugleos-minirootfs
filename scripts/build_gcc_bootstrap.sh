@@ -49,7 +49,8 @@ $SOURCE_DIR/configure \
     --disable-multilib
 
 # Build the compiler first
-make all-gcc all-target-libgcc -j$(nproc)
+make all-gcc -j$(nproc)
+# make all-gcc all-target-libgcc -j$(nproc)
 # make install-gcc install-target-libgcc
 
 # Build and install libgcc so that later stages (like musl) have the
