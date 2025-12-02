@@ -14,9 +14,9 @@ ROOTFS=$4
 SOURCES=$5
 BUILD=$6
 LINUX_VERSION=$7
-
-# BUILD_ARCH is provided by the Makefile to avoid redefinition here.
-: "${BUILD_ARCH:?BUILD_ARCH must be set}"
+KERNEL_ARCH= 	if filter aarch64,$(ARCHITECTURE),arm64,\
+							if filter x86_64,$(ARCHITECTURE),x86,\
+							if $(filter riscv64,$(ARCHITECTURE),riscv, "error Not supported architecture: '$(ARCHITECTURE)'; must be one of: aarch64, x86_64, riscv64"
 
 SRC_ARCHIVE="${SOURCES}/linux-${LINUX_VERSION}.tar.xz"
 BUILD_DIR="${BUILD}/kernel-headers"
@@ -27,4 +27,4 @@ mkdir -p "$BUILD_DIR"
 tar -xf "$SRC_ARCHIVE" -C "$BUILD_DIR" --strip-components=1
 cd "$BUILD_DIR"
 
-make ARCH="$BUILD_ARCH" INSTALL_HDR_PATH="$SYSROOT/usr" headers_install
+make ARCH="$KERNEL_ARCH" INSTALL_HDR_PATH="$SYSROOT/usr" headers_install
