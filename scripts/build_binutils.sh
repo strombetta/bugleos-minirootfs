@@ -1,4 +1,9 @@
 #!/bin/sh
+# Copyright (c) 2025 Sebastiano Trombetta
+# SPDX-License-Identifier: MIT
+#
+# build_binutils.sh - Build and install a cross Binutils toolchain configured
+# for the provided target triple and sysroot.
 set -eu
 
 # build_binutils.sh TARGET PREFIX SYSROOT ROOTFS SOURCES BUILD BINUTILS_VERSION

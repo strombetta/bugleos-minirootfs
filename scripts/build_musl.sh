@@ -1,4 +1,9 @@
 #!/bin/sh
+# Copyright (c) 2025 Sebastiano Trombetta
+# SPDX-License-Identifier: MIT
+#
+# build_musl.sh - Build and install the musl C library into the target sysroot
+# for the specified cross-compilation target.
 set -eu
 
 # build_musl.sh TARGET PREFIX SYSROOT ROOTFS SOURCES BUILD MUSL_VERSION

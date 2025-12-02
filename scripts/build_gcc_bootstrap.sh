@@ -1,4 +1,11 @@
 #!/bin/sh
+# Copyright (c) 2025 Sebastiano Trombetta
+# SPDX-License-Identifier: MIT
+#
+# build_gcc_bootstrap.sh - Prepare a GCC bootstrap compiler and libgcc for
+# cross-compiling with a sysroot. Extracts the GCC sources into a build
+# directory and builds only the compiler and libgcc needed for subsequent
+# stages.
 set -eu
 
 # build_gcc_bootstrap.sh TARGET PREFIX SYSROOT ROOTFS SOURCES BUILD GCC_VERSION
@@ -17,9 +24,10 @@ rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
 tar -xf "$SRC_ARCHIVE" -C "$BUILD_DIR" --strip-components=1
-cd "$BUILD_DIR"
 
-./contrib/download_prerequisites
+(cd "$BUILD_DIR" && ./contrib/download_prerequisites)
+
+cd "$BUILD_DIR"
 
 ./configure \
     --target="$TARGET" \

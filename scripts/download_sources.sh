@@ -1,4 +1,9 @@
 #!/bin/sh
+# Copyright (c) 2025 Sebastiano Trombetta
+# SPDX-License-Identifier: MIT
+#
+# download_sources.sh - Download the source archives required for building the
+# cross toolchain and userland components.
 set -eu
 
 # download_sources.sh TARGET PREFIX SYSROOT ROOTFS SOURCES BUILD BINUTILS_VERSION GCC_VERSION LINUX_VERSION MUSL_VERSION BUSYBOX_VERSION

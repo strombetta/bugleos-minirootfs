@@ -1,4 +1,9 @@
 #!/bin/sh
+# Copyright (c) 2025 Sebastiano Trombetta
+# SPDX-License-Identifier: MIT
+#
+# build_busybox.sh - Build and install BusyBox into the target sysroot for the
+# specified cross-compilation target.
 set -eu
 
 # build_busybox.sh TARGET PREFIX SYSROOT ROOTFS SOURCES BUILD BUSYBOX_VERSION

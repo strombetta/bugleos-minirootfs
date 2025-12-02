@@ -1,4 +1,9 @@
 #!/bin/sh
+# Copyright (c) 2025 Sebastiano Trombetta
+# SPDX-License-Identifier: MIT
+#
+# build_gcc_final.sh - Build and install the final cross GCC using the prepared
+# sysroot and previously built runtime components.
 set -eu
 
 # build_gcc_final.sh TARGET PREFIX SYSROOT ROOTFS SOURCES BUILD GCC_VERSION
