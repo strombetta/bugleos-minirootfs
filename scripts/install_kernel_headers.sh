@@ -19,7 +19,7 @@ LINUX_VERSION=$7
 : "${BUILD_ARCH:?BUILD_ARCH must be set}"
 
 SRC_ARCHIVE="${SOURCES}/linux-${LINUX_VERSION}.tar.xz"
-BUILD_DIR="${BUILD}/linux-headers"
+BUILD_DIR="${BUILD}/kernel-headers"
 
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
