@@ -1,4 +1,9 @@
 #!/bin/sh
+# Copyright (c) 2025 Sebastiano Trombetta
+# SPDX-License-Identifier: MIT
+#
+# install_kernel_headers.sh - Install Linux kernel headers into the target
+# sysroot for use by subsequent toolchain stages.
 set -eu
 
 # install_kernel_headers.sh TARGET PREFIX SYSROOT ROOTFS SOURCES BUILD LINUX_VERSION

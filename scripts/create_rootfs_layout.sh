@@ -1,4 +1,9 @@
 #!/bin/sh
+# Copyright (c) 2025 Sebastiano Trombetta
+# SPDX-License-Identifier: MIT
+#
+# create_rootfs_layout.sh - Prepare the directory layout inside the sysroot and
+# target root filesystem with standard directories and device nodes.
 set -eu
 
 # create_rootfs_layout.sh TARGET PREFIX SYSROOT ROOTFS SOURCES BUILD
