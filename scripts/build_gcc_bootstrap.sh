@@ -21,11 +21,12 @@ SRC_ARCHIVE="${SOURCES}/gcc-${GCC_VERSION}.tar.xz"
 SOURCE_DIR="$(SOURCES)/gcc-${GCC_VERSION}"
 BUILD_DIR="${BUILD}/gcc-bootstrap"
 
-rm -rf "$BUILD_DIR"
-mkdir -p "$BUILD_DIR"
-
+rm -rf "$SOURCE_DIR"
+mkdir -p "$SOURCE_DIR"
 tar -xf "$SRC_ARCHIVE" -C "$SOURCE_DIR" --strip-components=1
 
+rm -rf "$BUILD_DIR"
+mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
 $SOURCE_DIR/configure \
