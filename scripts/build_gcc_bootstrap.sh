@@ -25,7 +25,7 @@ mkdir -p "$BUILD_DIR"
 
 tar -xf "$SRC_ARCHIVE" -C "$BUILD_DIR" --strip-components=1
 
-(cd "$BUILD_DIR" && ./contrib/download_prerequisites)
+# (cd "$BUILD_DIR" && ./contrib/download_prerequisites)
 
 cd "$BUILD_DIR"
 
@@ -49,10 +49,10 @@ cd "$BUILD_DIR"
     --disable-multilib
 
 # Build the compiler first
-make all-gcc -j$(nproc)
-make install-gcc
+make all-gcc all-target-libgcc -j$(nproc)
+make install-gcc install-target-libgcc
 
 # Build and install libgcc so that later stages (like musl) have the
 # compiler builtins they need during linking
-make all-target-libgcc -j$(nproc)
-make install-target-libgcc
+# make  -j$(nproc)
+# make 
