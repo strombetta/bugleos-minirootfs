@@ -33,10 +33,19 @@ cd "$BUILD_DIR"
     --target="$TARGET" \
     --prefix="$PREFIX" \
     --with-sysroot="$SYSROOT" \
-    --enable-languages=c \
     --without-headers \
-    --disable-multilib \
-    --disable-nls
+	--with-newlib \
+	--disable-nls \
+	--disable-shared \
+	--disable-threads \
+	--disable-libatomic \
+	--disable-libgomp \
+	--disable-libquadmath \
+	--disable-libssp \
+	--disable-libvtv \
+	--disable-multilib \
+	--enable-languages=c \
+    --disable-multilib
 
 # Build the compiler first
 make all-gcc -j$(nproc)
