@@ -15,6 +15,10 @@ SOURCES=$5
 BUILD=$6
 LINUX_VERSION=$7
 
+# Default to the host architecture unless ARCH is provided by the caller.
+HOST_ARCH=$(uname -m)
+BUILD_ARCH=${ARCH:-$HOST_ARCH}
+
 SRC_ARCHIVE="${SOURCES}/linux-${LINUX_VERSION}.tar.xz"
 BUILD_DIR="${BUILD}/linux-headers"
 
@@ -24,4 +28,4 @@ mkdir -p "$BUILD_DIR"
 tar -xf "$SRC_ARCHIVE" -C "$BUILD_DIR" --strip-components=1
 cd "$BUILD_DIR"
 
-make ARCH=x86_64 INSTALL_HDR_PATH="$SYSROOT/usr" headers_install
+make ARCH="$BUILD_ARCH" INSTALL_HDR_PATH="$SYSROOT/usr" headers_install
