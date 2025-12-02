@@ -30,5 +30,11 @@ cd "$BUILD_DIR"
     --disable-multilib \
     --disable-nls
 
+# Build the compiler first
 make all-gcc -j$(nproc)
 make install-gcc
+
+# Build and install libgcc so that later stages (like musl) have the
+# compiler builtins they need during linking
+make all-target-libgcc -j$(nproc)
+make install-target-libgcc
