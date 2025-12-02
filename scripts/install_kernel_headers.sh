@@ -14,9 +14,21 @@ ROOTFS=$4
 SOURCES=$5
 BUILD=$6
 LINUX_VERSION=$7
-KERNEL_ARCH= 	if filter aarch64,$(ARCHITECTURE),arm64,\
-							if filter x86_64,$(ARCHITECTURE),x86,\
-							if $(filter riscv64,$(ARCHITECTURE),riscv, "error Not supported architecture: '$(ARCHITECTURE)'; must be one of: aarch64, x86_64, riscv64"
+case "$TARGET" in
+	aarch64-*)
+        KERNEL_ARCH="arm64"
+        ;;
+    x86_64-*)
+        KERNEL_ARCH="x86"
+        ;;
+    riscv64-*)
+        KERNEL_ARCH="riscv"
+        ;;
+    *)
+        echo "Error: unsupported target '$TARGET'; must be one of: aarch64-*, x86_64-*, riscv64-*." >&2
+        exit 1
+        ;;
+esac
 
 SRC_ARCHIVE="${SOURCES}/linux-${LINUX_VERSION}.tar.xz"
 BUILD_DIR="${BUILD}/kernel-headers"
