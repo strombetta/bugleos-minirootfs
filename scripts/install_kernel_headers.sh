@@ -15,9 +15,8 @@ SOURCES=$5
 BUILD=$6
 LINUX_VERSION=$7
 
-# Default to the host architecture unless ARCH is provided by the caller.
-HOST_ARCH=$(uname -m)
-BUILD_ARCH=${ARCH:-$HOST_ARCH}
+# BUILD_ARCH is provided by the Makefile to avoid redefinition here.
+: "${BUILD_ARCH:?BUILD_ARCH must be set}"
 
 SRC_ARCHIVE="${SOURCES}/linux-${LINUX_VERSION}.tar.xz"
 BUILD_DIR="${BUILD}/linux-headers"
