@@ -34,6 +34,7 @@ cd "$BUILD_DIR"
     --prefix="$PREFIX" \
     --with-sysroot="$SYSROOT" \
     --without-headers \
+	--with-native-system-header-dir=/usr/include \
 	--with-newlib \
 	--disable-nls \
 	--disable-shared \
