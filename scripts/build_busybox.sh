@@ -14,18 +14,36 @@ ROOTFS=$4
 SOURCES=$5
 BUILD=$6
 BUSYBOX_VERSION=$7
+case "$TARGET" in
+	aarch64-*)
+        KERNEL_ARCH="arm64"
+        ;;
+    x86_64-*)
+        KERNEL_ARCH="x86"
+        ;;
+    riscv64-*)
+        KERNEL_ARCH="riscv"
+        ;;
+    *)
+        echo "Error: unsupported target '$TARGET'; must be one of: aarch64-*, x86_64-*, riscv64-*." >&2
+        exit 1
+        ;;
+esac
 
 SRC_ARCHIVE="${SOURCES}/busybox-${BUSYBOX_VERSION}.tar.bz2"
+SOURCE_DIR="${SOURCES}/busybox-${BUSYBOX_VERSION}"
 BUILD_DIR="${BUILD}/busybox"
+
+rm -rf "$SOURCE_DIR"
+mkdir -p "$SOURCE_DIR"
+tar -xf "$SRC_ARCHIVE" -C "$SOURCE_DIR" --strip-components=1
 
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
-
-tar -xf "$SRC_ARCHIVE" -C "$BUILD_DIR" --strip-components=1
 cd "$BUILD_DIR"
 
-make distclean || true
-make defconfig
+make -C "$SOURCE_DIR" O="$BUILD_DIR" ARCH="$KERNEL_ARCH" CROSS_COMPILE="${TARGET}-" distclean || true
+make -C "$SOURCE_DIR" O="$BUILD_DIR" ARCH="$KERNEL_ARCH" CROSS_COMPILE="${TARGET}-" defconfig
 
 # Enable static build
 sed -i 's/^# CONFIG_STATIC is not set/CONFIG_STATIC=y/' .config
