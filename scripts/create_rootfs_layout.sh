@@ -41,6 +41,18 @@ shadow: files
 hosts: files dns
 EON
 
+cat > "$ROOTFS/etc/fstab" <<'EOFSTAB'
+proc            /proc   proc    defaults                0       0
+sysfs           /sys    sysfs   defaults                0       0
+tmpfs           /tmp    tmpfs   defaults,nosuid,nodev   0       0
+EOFSTAB
+
+cat > "$ROOTFS/etc/inittab" <<'EOINIT'
+::sysinit:/bin/mount -a
+::respawn:/sbin/getty -L ttyS0 115200 vt100
+::ctrlaltdel:/sbin/reboot
+EOINIT
+
 cat > "$ROOTFS/etc/profile" <<'EOPR'
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 PS1='[\u@bugleos \W]$ '
