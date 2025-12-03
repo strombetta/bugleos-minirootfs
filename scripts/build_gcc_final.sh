@@ -27,7 +27,7 @@ cd "$BUILD_DIR"
 
 #./contrib/download_prerequisites
 
-./configure \
+$SOURCE_DIR/configure \
     --target="$TARGET" \
     --prefix="$PREFIX" \
     --with-sysroot="$SYSROOT" \
