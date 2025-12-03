@@ -63,7 +63,7 @@ $(ROOTFS_STAMP): $(BUSYBOX_STAMP) $(SCRIPTS)/create_rootfs_layout.sh config.mk
 $(IMAGE_TARBALL): $(ROOTFS_STAMP) | $(OUTPUT)
 	@mkdir -p $(OUTPUT)
 	@sh -c 'chown -R 0:0 "$(ROOTFS)" 2>/dev/null || true'
-	@tar --numeric-owner -czf $(IMAGE_TARBALL) -C $(ROOTFS) .
+	@tar --numeric-owner --numeric-owner --owner=0 --group=0 -czf $(IMAGE_TARBALL) -C $(ROOTFS) .
 
 $(OUTPUT):
 	@mkdir -p $@
