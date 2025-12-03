@@ -47,6 +47,6 @@ make -C "$SOURCE_DIR" O="$BUILD_DIR" ARCH="$KERNEL_ARCH" CROSS_COMPILE="${TARGET
 
 # Enable static build
 sed -i 's/^# CONFIG_STATIC is not set/CONFIG_STATIC=y/' .config
-
-make CROSS_COMPILE="${TARGET}-" -j$(nproc)
-make CROSS_COMPILE="${TARGET}-" CONFIG_PREFIX="$ROOTFS" install
+		
+make -C "$SOURCE_DIR" O="$BUILD_DIR" CROSS_COMPILE="${TARGET}-" CC="${PREFIX}/bin/$(TARGET)-gcc" AR="${PREFIX}/bin/$(TARGET)-ar" STRIP="${PREFIX}/bin/$(TARGET)-strip" -j$(nproc)
+make -C "$SOURCE_DIR" O="$BUILD_DIR" CROSS_COMPILE="${TARGET}-" CC="${PREFIX}/bin/$(TARGET)-gcc" AR="${PREFIX}/bin/$(TARGET)-ar" STRIP="${PREFIX}/bin/$(TARGET)-strip" CONFIG_PREFIX="$ROOTFS" install
