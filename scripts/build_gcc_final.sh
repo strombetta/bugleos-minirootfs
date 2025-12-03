@@ -16,23 +16,27 @@ BUILD=$6
 GCC_VERSION=$7
 
 SRC_ARCHIVE="${SOURCES}/gcc-${GCC_VERSION}.tar.xz"
+SOURCE_DIR="${SOURCES}/gcc-${GCC_VERSION}"
 BUILD_DIR="${BUILD}/gcc-final"
 
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
-tar -xf "$SRC_ARCHIVE" -C "$BUILD_DIR" --strip-components=1
+tar -xf "$SRC_ARCHIVE" -C "$SOURCE_DIR" --strip-components=1
 cd "$BUILD_DIR"
 
-./contrib/download_prerequisites
+#./contrib/download_prerequisites
 
 ./configure \
     --target="$TARGET" \
     --prefix="$PREFIX" \
     --with-sysroot="$SYSROOT" \
-    --enable-languages=c \
+    --with-native-system-header-dir=/usr/include \
+    --enable-languages=c,c++ \
     --disable-multilib \
-    --disable-nls
+    --disable-nls \
+    --disable-libsanitizer \
+	--disable-libquadmath
 
 make -j$(nproc)
 make install
