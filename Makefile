@@ -24,9 +24,10 @@ download: $(DOWNLOAD_STAMP)
 
 # Download all sources
 SCRIPTS:=scripts
+
 $(DOWNLOAD_STAMP): $(SCRIPTS)/download_sources.sh config.mk | $(SOURCES)
 	@sh $(SCRIPTS)/download_sources.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(BINUTILS_VERSION)" "$(GCC_VERSION)" "$(LINUX_VERSION)" "$(MUSL_VERSION)" "$(BUSYBOX_VERSION)"
-    @touch $@
+	@touch $@
 
 $(SOURCES):
 	@mkdir -p $@
