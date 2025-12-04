@@ -55,7 +55,7 @@ EOINIT
 
 cat > "$ROOTFS/etc/profile" <<'EOPR'
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-PS1='[\u@bugleos \W]$ '
+PS1='\e[33m\u@\h\e[0m:\e[36m\w\e[0m \e[35m\\$\e[0m '
 EOPR
 
 cat > "$ROOTFS/etc/wsl.conf" <<'EOW'
