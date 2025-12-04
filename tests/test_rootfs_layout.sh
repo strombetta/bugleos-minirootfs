@@ -11,7 +11,7 @@ for d in $dirs; do
     fi
 done
 
-for f in passwd group hosts nsswitch.conf wsl.conf; do
+for f in passwd group hosts nsswitch.conf wsl.conf os-release; do
     if [ ! -s "$ROOTFS/etc/$f" ]; then
         echo "Missing or empty /etc/$f" >&2
         exit 1

@@ -6,13 +6,14 @@
 # target root filesystem with standard directories and device nodes.
 set -eu
 
-# create_rootfs_layout.sh TARGET PREFIX SYSROOT ROOTFS SOURCES BUILD
+# create_rootfs_layout.sh TARGET PREFIX SYSROOT ROOTFS SOURCES BUILD VERSION
 TARGET=$1
 PREFIX=$2
 SYSROOT=$3
 ROOTFS=$4
 SOURCES=$5
 BUILD=$6
+VERSION=$7
 
 # Create directory structure
 for dir in bin sbin usr/bin usr/sbin dev proc sys tmp etc var var/run home; do
@@ -59,9 +60,16 @@ PS1='\e[33m\u@\h\e[0m:\e[36m\w\e[0m \e[35m\\$\e[0m '
 EOPR
 
 cat > "$ROOTFS/etc/wsl.conf" <<'EOW'
-[interop]
-appendWindowsPath = false
+	[interop]
+	appendWindowsPath = false
 
-[automount]
-options = "metadata"
+	[automount]
+	options = "metadata"
 EOW
+
+cat > "$ROOTFS/etc/os-release" <<EOF
+NAME="BugleOS"
+ID=bugleos
+PRETTY_NAME="BugleOS $VERSION"
+VERSION_ID="$VERSION"
+EOF
