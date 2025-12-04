@@ -60,8 +60,8 @@ $(BUSYBOX_STAMP): $(GCC_FINAL_STAMP) $(SCRIPTS)/build_busybox.sh config.mk
 
 
 $(ROOTFS_STAMP): $(BUSYBOX_STAMP) $(SCRIPTS)/create_rootfs_layout.sh config.mk
-@sh $(SCRIPTS)/create_rootfs_layout.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(VERSION)"
-@touch $@
+	@sh $(SCRIPTS)/create_rootfs_layout.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(VERSION)"
+	@touch $@
 
 $(IMAGE_TARBALL): $(ROOTFS_STAMP) | $(OUTPUT)
 	@mkdir -p $(OUTPUT)
@@ -89,4 +89,3 @@ clean:
 # Remove toolchain and sysroot as well
 distclean: clean
 	rm -rf $(PREFIX) $(SYSROOT) $(IMAGE_TARBALL) $(DOWNLOAD_STAMP)
-
