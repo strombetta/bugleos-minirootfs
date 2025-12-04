@@ -1,20 +1,22 @@
 # Makefile for BugleOS minirootfs
+# BugleOS v1.0.0
+# Copyright (C) Sebastiano Trombetta. All rights reserved.
 
 include config.mk
 
-HOST_ARCH ?= $(shell uname -m)
-BUILD_ARCH ?= $(if $(ARCH),$(ARCH),$(HOST_ARCH))
+HOST_ARCH 				?= $(shell uname -m)
+BUILD_ARCH 				?= $(if $(ARCH),$(ARCH),$(HOST_ARCH))
 export BUILD_ARCH
 
-BINUTILS_STAMP:=$(BUILD)/.binutils.stamp
-GCC_BOOTSTRAP_STAMP:=$(BUILD)/.gcc-bootstrap.stamp
-KERNEL_HEADERS_STAMP:=$(BUILD)/.kernel-headers.stamp
-MUSL_STAMP:=$(BUILD)/.musl.stamp
-GCC_FINAL_STAMP:=$(BUILD)/.gcc-final.stamp
-BUSYBOX_STAMP:=$(BUILD)/.busybox.stamp
-ROOTFS_STAMP:=$(BUILD)/.rootfs.stamp
-IMAGE_TARBALL:=$(OUTPUT)/bugleos-minirootfs-wsl.tar.gz
-DOWNLOAD_STAMP:=$(SOURCES)/.downloaded
+BINUTILS_STAMP			:=$(BUILD)/.binutils.stamp
+GCC_BOOTSTRAP_STAMP		:=$(BUILD)/.gcc-bootstrap.stamp
+KERNEL_HEADERS_STAMP	:=$(BUILD)/.kernel-headers.stamp
+MUSL_STAMP				:=$(BUILD)/.musl.stamp
+GCC_FINAL_STAMP			:=$(BUILD)/.gcc-final.stamp
+BUSYBOX_STAMP			:=$(BUILD)/.busybox.stamp
+ROOTFS_STAMP			:=$(BUILD)/.rootfs.stamp
+IMAGE_TARBALL			:=$(OUTPUT)/bugleos-minirootfs-$(VERSION)-$(ARCHITECTURE).tar.gz
+DOWNLOAD_STAMP			:=$(SOURCES)/.downloaded
 
 .PHONY: all download test clean distclean
 
