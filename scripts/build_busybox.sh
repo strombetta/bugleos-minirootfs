@@ -46,7 +46,20 @@ make -C "$SOURCE_DIR" O="$BUILD_DIR" ARCH="$KERNEL_ARCH" CROSS_COMPILE="${TARGET
 make -C "$SOURCE_DIR" O="$BUILD_DIR" ARCH="$KERNEL_ARCH" CROSS_COMPILE="${TARGET}-" defconfig
 
 # Enable static build
-sed -i 's/^# CONFIG_STATIC is not set/CONFIG_STATIC=y/' .config
+sed -e 's/# CONFIG_STATIC is not set/CONFIG_STATIC=y/' -i .config
+sed -e 's/# CONFIG_STATIC_LIBGCC is not set/CONFIG_STATIC_LIBGCC=y/' -i .config
+sed -e 's/CONFIG_TC=y/# CONFIG_TC is not set/' -i .config
+sed -e 's/CONFIG_BASE32=y/# CONFIG_BASE32 is not set/' -i .config
+sed -e 's/CONFIG_CONSPY=y/# CONFIG_CONSPY is not set/' -i .config
+sed -e 's/CONFIG_CPIO=y/# CONFIG_CPIO is not set/' -i .config
+sed -e 's/CONFIG_CTTYHACK=y/# CONFIG_CTTYHACK is not set/' -i .config
+sed -e 's/CONFIG_HUSH=y/# CONFIG_HUSH is not set/' -i .config
+sed -e 's/CONFIG_MT=y/# CONFIG_MT is not set/' -i .config
+sed -e 's/CONFIG_RESUME=y/# CONFIG_RESUME is not set/' -i .config
+sed -e 's/CONFIG_RPM=y/# CONFIG_RPM is not set/' -i .config
+sed -e 's/CONFIG_SCRIPTREPLAY=y/# CONFIG_SCRIPTREPLAY is not set/' -i .config
+sed -e 's/CONFIG_SETARCH=y/# CONFIG_SETARCH is not set/' -i .config
+sed -e 's/CONFIG_VI=y/# CONFIG_VI is not set/' -i .config
 		
 make -C "$SOURCE_DIR" O="$BUILD_DIR" CROSS_COMPILE="${TARGET}-" CC="${PREFIX}/bin/${TARGET}-gcc" AR="${PREFIX}/bin/${TARGET}-ar" STRIP="${PREFIX}/bin/${TARGET}-strip" -j$(nproc)
 make -C "$SOURCE_DIR" O="$BUILD_DIR" CROSS_COMPILE="${TARGET}-" CC="${PREFIX}/bin/${TARGET}-gcc" AR="${PREFIX}/bin/${TARGET}-ar" STRIP="${PREFIX}/bin/${TARGET}-strip" CONFIG_PREFIX="$ROOTFS" install
