@@ -70,6 +70,6 @@ EOW
 cat > "$ROOTFS/etc/os-release" <<EOF
 NAME="BugleOS"
 ID=bugleos
-PRETTY_NAME="BugleOS $VERSION"
+PRETTY_NAME="BugleOS v$VERSION"
 VERSION_ID="$VERSION"
 EOF
