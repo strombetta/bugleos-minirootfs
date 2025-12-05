@@ -73,3 +73,7 @@ ID=bugleos
 PRETTY_NAME="BugleOS v$VERSION"
 VERSION_ID="$VERSION"
 EOF
+
+cat > "$ROOTFS/etc/motd" <<'EOM'
+Welcome to BugleOS $(VERSION) ($(uname -o) $(uname -r) $(uname -m))
+EOM
