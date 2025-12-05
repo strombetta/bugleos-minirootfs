@@ -6,6 +6,9 @@
 # specified cross-compilation target.
 set -eu
 
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
+PATCH_FILE="${SCRIPT_DIR}/../patches/busybox-ls-color.patch"
+
 # build_busybox.sh TARGET PREFIX SYSROOT ROOTFS SOURCES BUILD BUSYBOX_VERSION
 TARGET=$1
 PREFIX=$2
@@ -37,6 +40,13 @@ BUILD_DIR="${BUILD}/busybox"
 rm -rf "$SOURCE_DIR"
 mkdir -p "$SOURCE_DIR"
 tar -xf "$SRC_ARCHIVE" -C "$SOURCE_DIR" --strip-components=1
+
+if [ ! -f "$PATCH_FILE" ]; then
+	echo "BusyBox patch not found at $PATCH_FILE" >&2
+	exit 1
+fi
+
+patch -d "$SOURCE_DIR" -p1 < "$PATCH_FILE"
 
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
