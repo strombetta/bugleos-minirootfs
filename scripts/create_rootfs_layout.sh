@@ -16,7 +16,7 @@ BUILD=$6
 VERSION=$7
 
 # Create directory structure
-for dir in bin sbin usr/bin usr/sbin dev proc sys tmp etc var var/run home; do
+for dir in bin sbin usr/bin usr/sbin dev proc sys tmp etc etc/profile.d var var/run home; do
     mkdir -p "$ROOTFS/$dir"
 done
 chmod 1777 "$ROOTFS/tmp"
@@ -57,6 +57,11 @@ EOINIT
 cat > "$ROOTFS/etc/profile" <<'EOPR'
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 PS1='\e[33m\u@\h\e[0m:\e[36m\w\e[0m \e[35m\\$\e[0m '
+if [ -d /etc/profile.d ]; then
+    for script in /etc/profile.d/*.sh; do
+        [ -r "$script" ] && . "$script"
+    done
+fi
 EOPR
 
 cat > "$ROOTFS/etc/wsl.conf" <<'EOW'
