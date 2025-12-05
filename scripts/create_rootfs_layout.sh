@@ -42,21 +42,21 @@ shadow: files
 hosts: files dns
 EON
 
-cat > "$ROOTFS/etc/fstab" <<'EOFSTAB'
+cat > "$ROOTFS/etc/fstab" << 'EOFSTAB'
 proc            /proc   proc    defaults                0       0
 sysfs           /sys    sysfs   defaults                0       0
 tmpfs           /tmp    tmpfs   defaults,nosuid,nodev   0       0
 EOFSTAB
 
-cat > "$ROOTFS/etc/inittab" <<'EOINIT'
+cat > "$ROOTFS/etc/inittab" << 'EOINIT'
 ::sysinit:/bin/mount -a
 ::respawn:/sbin/getty -L ttyS0 115200 vt100
 ::ctrlaltdel:/sbin/reboot
 EOINIT
 
-cat > "$ROOTFS/etc/profile" <<'EOPR'
+cat > "$ROOTFS/etc/profile" << 'EOPR'
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-PS1='\e[33m\u@\h\e[0m:\e[36m\w\e[0m \e[35m\\$\e[0m '
+
 if [ -d /etc/profile.d ]; then
     for script in /etc/profile.d/*.sh; do
         [ -r "$script" ] && . "$script"
@@ -64,21 +64,24 @@ if [ -d /etc/profile.d ]; then
 fi
 EOPR
 
-cat > "$ROOTFS/etc/wsl.conf" <<'EOW'
-	[interop]
-	appendWindowsPath = false
-
-	[automount]
-	options = "metadata"
-EOW
-
-cat > "$ROOTFS/etc/os-release" <<EOF
+cat > "$ROOTFS/etc/os-release" << 'EOF'
 NAME="BugleOS"
 ID=bugleos
 PRETTY_NAME="BugleOS v$VERSION"
 VERSION_ID="$VERSION"
 EOF
 
-cat > "$ROOTFS/etc/motd" <<'EOM'
-Welcome to BugleOS $(VERSION) ($(uname -o) $(uname -r) $(uname -m))
+cat > "$ROOTFS/etc/motd" << 'EOM'
+Welcome to BugleOS $VERSION ($(uname -o) $(uname -r) $(uname -m))
 EOM
+
+cat > "$ROOTFS/etc/profile.d/motd.sh" << 'EOMOTD'
+#!/bin/sh
+[ -t 0 ] && [ -r /etc/motd ] && cat /etc/motd
+EOMTD
+
+cat > "$ROOTFS/etc/profile.d/prompt.sh" << 'EOPROMPT'
+#!/bin/sh
+PS1='\e[33m\u@\h\e[0m:\e[36m\w\e[0m \e[35m\\$\e[0m '
+EOPROMPT
+
