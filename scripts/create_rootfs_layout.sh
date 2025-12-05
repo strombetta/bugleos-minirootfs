@@ -72,16 +72,15 @@ VERSION_ID="$VERSION"
 EOF
 
 cat > "$ROOTFS/etc/motd" << 'EOM'
-Welcome to BugleOS $VERSION ($(uname -o) $(uname -r) $(uname -m))
+Welcome to BugleOS "$VERSION" ($(uname -o) $(uname -r) $(uname -m))
 EOM
 
 cat > "$ROOTFS/etc/profile.d/motd.sh" << 'EOMOTD'
 #!/bin/sh
 [ -t 0 ] && [ -r /etc/motd ] && cat /etc/motd
-EOMTD
+EOMOTD
 
 cat > "$ROOTFS/etc/profile.d/prompt.sh" << 'EOPROMPT'
 #!/bin/sh
 PS1='\e[33m\u@\h\e[0m:\e[36m\w\e[0m \e[35m\\$\e[0m '
 EOPROMPT
-
