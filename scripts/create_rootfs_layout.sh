@@ -82,5 +82,5 @@ EOMOTD
 
 cat > "$ROOTFS/etc/profile.d/prompt.sh" << 'EOPROMPT'
 #!/bin/sh
-PS1='\e[33m\u@\h\e[0m:\e[36m\w\e[0m \e[35m\\$\e[0m '
+PS1='\e[33m\u@\h\e[0m:\e[96m\w\e[0m \e[35m\\$\e[0m '
 EOPROMPT
