@@ -1,0 +1,56 @@
+= BugleOS minirootfs
+
+image:https://github.com/bugleos/bugleos-minirootfs/actions/workflows/ci.yml/badge.svg[CI,link="https://github.com/bugleos/bugleos-minirootfs/actions/workflows/ci.yml"]
+
+BugleOS minirootfs is an experimental minimal Linux distribution for WSL. It cross-builds a musl-based toolchain, static BusyBox, and a minimal root filesystem that can be imported with `wsl --import`.
+
+== Prerequisites
+Install standard build tools (example for Debian/Ubuntu):
+
+[source,shell]
+----
+sudo apt-get update
+sudo apt-get install build-essential wget bison flex texinfo bc git python3 gawk libgmp-dev libmpfr-dev libmpc-dev
+----
+
+== Quick start
+. Download sources:
++
+[source,shell]
+----
+make download
+----
+. Build the full image:
++
+[source,shell]
+----
+make
+----
+. Run tests:
++
+[source,shell]
+----
+make test
+----
+. Import into WSL from Windows PowerShell:
++
+[source,powershell]
+----
+wsl --import BugleOS C:\\WSL\\BugleOS bugleos-minirootfs-wsl.tar.gz
+----
+
+== Project layout
+* `Makefile` orchestrates the build with targets for toolchain, BusyBox, rootfs, image, and tests.
+* `config.mk` stores overridable variables such as `TARGET`, `PREFIX`, `SYSROOT`, `ROOTFS`, and version numbers.
+* `scripts/` contains build helpers for each component.
+* `tests/` provides verification scripts that operate without executing target binaries.
+* `sources/`, `build/`, and `output/` hold downloads, build artifacts, and the final tarball respectively.
+
+== Notes
+* Default target matches the host machine where you run the build; override by setting `TARGET` when invoking make.
+* The toolchain and rootfs are built completely via cross-compilation; no target binaries are executed during the build.
+* The BusyBox binary is built statically for maximal portability.
+
+== License
+
+This project is licensed under the MIT License. For the full text of the license, see the link:LICENSE[LICENSE] file.
