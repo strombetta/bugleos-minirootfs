@@ -2,7 +2,9 @@
 set -eu
 
 OUTPUT=${OUTPUT:-$PWD/output}
-TARBALL="$OUTPUT/bugleos-minirootfs-wsl.tar.gz"
+ARCHITECTURE=${ARCHITECTURE:-$(uname -m)}
+VERSION=${VERSION:-1.0.0}
+TARBALL="$OUTPUT/bugleos-minirootfs-${VERSION}-${ARCHITECTURE}.tar.gz"
 
 if [ ! -s "$TARBALL" ]; then
     echo "Image tarball missing or empty at $TARBALL" >&2
