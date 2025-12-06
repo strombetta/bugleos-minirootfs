@@ -71,17 +71,11 @@ PRETTY_NAME="BugleOS v$VERSION"
 VERSION_ID="$VERSION"
 EOF
 
-cat > "$ROOTFS/etc/motd" << EOM
-Welcome to BugleOS "$VERSION"
-EOM
-
-cat > "$ROOTFS/etc/profile.d/motd.sh" << 'EOMOTD'
+cat > "$ROOTFS/etc/profile.d/motd.sh" << EOMOTD
 #!/bin/sh
 [ -t 0 ] || exit 0
-if [ -r /etc/motd ]; then
- cat /etc/motd
-fi
-printf '(%s %s %s)\n' "$(uname -o)" "$(uname -r)" "$(uname -m)"
+
+printf 'Welcome to BugleOS %s (%s %s %s)\n' "$VERSION" "\$(uname -o)" "\$(uname -r)" "\$(uname -m)"
 EOMOTD
 
 cat > "$ROOTFS/etc/profile.d/prompt.sh" << 'EOPROMPT'
