@@ -42,13 +42,13 @@ shadow: files
 hosts: files dns
 EON
 
-cat > "$ROOTFS/etc/fstab" << 'EOFSTAB'
+cat > "$ROOTFS/etc/fstab" << EOFSTAB
 proc            /proc   proc    defaults                0       0
 sysfs           /sys    sysfs   defaults                0       0
 tmpfs           /tmp    tmpfs   defaults,nosuid,nodev   0       0
 EOFSTAB
 
-cat > "$ROOTFS/etc/inittab" << 'EOINIT'
+cat > "$ROOTFS/etc/inittab" << EOINIT
 ::sysinit:/bin/mount -a
 ::respawn:/sbin/getty -L ttyS0 115200 vt100
 ::ctrlaltdel:/sbin/reboot
@@ -64,14 +64,14 @@ if [ -d /etc/profile.d ]; then
 fi
 EOPR
 
-cat > "$ROOTFS/etc/os-release" << 'EOF'
+cat > "$ROOTFS/etc/os-release" << EOF
 NAME="BugleOS"
 ID=bugleos
 PRETTY_NAME="BugleOS v$VERSION"
 VERSION_ID="$VERSION"
 EOF
 
-cat > "$ROOTFS/etc/motd" << 'EOM'
+cat > "$ROOTFS/etc/motd" << EOM
 Welcome to BugleOS "$VERSION" ($(uname -o) $(uname -r) $(uname -m))
 EOM
 
