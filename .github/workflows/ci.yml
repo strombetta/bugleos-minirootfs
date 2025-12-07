@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        architecture: [x86, x86_64, arm64]
+        architecture: [x86_64, arm64, riscv64]
     env:
       ARCH: ${{ matrix.architecture }}
       ARCHITECTURE: ${{ matrix.architecture }}
