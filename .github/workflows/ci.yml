@@ -5,34 +5,54 @@ on:
     branches: ["main"]
   pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"
 
 env:
   MAKEFLAGS: -j2
 
 jobs:
-  build:
+  determine-version:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Determine version
         id: version
         run: |
           if [[ "${GITHUB_REF:-}" == refs/tags/* ]]; then
             VERSION="${GITHUB_REF#refs/tags/}"
-          elif [[ -n "${GITHUB_RUN_NUMBER:-}" ]]; then
-            VERSION="0.0.${GITHUB_RUN_NUMBER}"
           else
             VERSION="$(date +'%Y%m%d')"
           fi
 
           echo "VERSION=${VERSION}" | tee version.env
-          echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
-          echo "VERSION_FILE=${GITHUB_WORKSPACE}/version.env" >> "$GITHUB_ENV"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload version metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: version-env
+          path: version.env
+
+  build:
+    needs: determine-version
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        architecture: [x86_64, arm64, riscv64]
+    env:
+      ARCH: ${{ matrix.architecture }}
+      ARCHITECTURE: ${{ matrix.architecture }}
+      VERSION: ${{ needs.determine-version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Write version metadata
+        run: |
+          echo "VERSION=${VERSION}" | tee version.env
+          echo "VERSION_FILE=${GITHUB_WORKSPACE}/version.env" >> "$GITHUB_ENV"
 
       - name: Install build dependencies
         run: |
@@ -45,9 +65,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: sources
-          key: ${{ runner.os }}-sources-${{ hashFiles('config.mk') }}
+          key: ${{ runner.os }}-${{ matrix.architecture }}-sources-${{ hashFiles('config.mk') }}
           restore-keys: |
-            ${{ runner.os }}-sources-
+            ${{ runner.os }}-${{ matrix.architecture }}-sources-
 
       - name: Cache build outputs
         uses: actions/cache@v4
@@ -57,16 +77,15 @@ jobs:
             sysroot
             build
             output
-          key: ${{ runner.os }}-build-${{ steps.version.outputs.version }}-${{ hashFiles('config.mk', 'Makefile', 'scripts/**', 'patches/**', 'tests/**') }}
+          key: ${{ runner.os }}-${{ matrix.architecture }}-build-${{ needs.determine-version.outputs.version }}-${{ hashFiles('config.mk', 'Makefile', 'scripts/**', 'patches/**', 'tests/**') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ steps.version.outputs.version }}-
+            ${{ runner.os }}-${{ matrix.architecture }}-build-${{ needs.determine-version.outputs.version }}-
 
       - name: Download sources
         run: make download
 
       - name: Build and run tests
         env:
-          VERSION: ${{ steps.version.outputs.version }}
           VERSION_FILE: ${{ github.workspace }}/version.env
         run: make test
 
@@ -77,25 +96,19 @@ jobs:
           mkdir -p "$OUTPUT"
           cp version.env "$OUTPUT/version.env"
 
-      - name: Upload version metadata
-        uses: actions/upload-artifact@v4
-        with:
-          name: version-env
-          path: version.env
-
       - name: Upload generated image
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: bugleos-minirootfs-${{ steps.version.outputs.version }}
+          name: bugleos-minirootfs-${{ needs.determine-version.outputs.version }}-${{ matrix.architecture }}
           path: |
             output/*.tar.gz
             output/version.env
           if-no-files-found: ignore
 
   release:
-    needs: build
-    if: startsWith(github.ref, 'refs/tags/')
+    needs: [determine-version, build]
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -111,13 +124,27 @@ jobs:
           . version.env
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
-      - name: Download generated image
+      - name: Check existing release
+        id: release-check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download generated images
+        if: steps.release-check.outputs.exists != 'true'
         uses: actions/download-artifact@v4
         with:
-          name: bugleos-minirootfs-${{ needs.build.outputs.version }}
+          pattern: bugleos-minirootfs-${{ steps.version.outputs.version }}-*
           path: artifacts
+          merge-multiple: true
 
       - name: Create release
+        if: steps.release-check.outputs.exists != 'true'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.version }}
