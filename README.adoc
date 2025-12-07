@@ -1,6 +1,8 @@
 = BugleOS minirootfs
 
-image:https://github.com/bugleos/bugleos-minirootfs/actions/workflows/ci.yml/badge.svg[CI,link="https://github.com/strombetta/bugleos-minirootfs/actions/workflows/ci.yml"]
+ifdef::env-github[]
+image:https://github.com/{gh-name}/workflows/CI/badge.svg["Build Status", link="https://github.com/{gh-name}/actions"]
+endif::env-github[]
 
 BugleOS minirootfs is an experimental minimal Linux distribution for WSL. It cross-builds a musl-based toolchain, static BusyBox, and a minimal root filesystem that can be imported with `wsl --import`.
 
