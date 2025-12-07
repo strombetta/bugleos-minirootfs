@@ -57,9 +57,9 @@ jobs:
             sysroot
             build
             output
-          key: ${{ runner.os }}-build-${{ hashFiles('config.mk', 'Makefile', 'scripts/**', 'patches/**', 'tests/**') }}
+          key: ${{ runner.os }}-build-${{ steps.version.outputs.version }}-${{ hashFiles('config.mk', 'Makefile', 'scripts/**', 'patches/**', 'tests/**') }}
           restore-keys: |
-            ${{ runner.os }}-build-
+            ${{ runner.os }}-build-${{ steps.version.outputs.version }}-
 
       - name: Download sources
         run: make download
