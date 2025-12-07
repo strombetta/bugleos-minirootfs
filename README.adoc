@@ -1,4 +1,6 @@
 = BugleOS minirootfs
+:script-name: bugleos-minirootfs
+:gh-name: strombetta/{script-name}
 
 ifdef::env-github[]
 image:https://github.com/{gh-name}/workflows/CI/badge.svg["Build Status", link="https://github.com/{gh-name}/actions"]
