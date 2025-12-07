@@ -1,8 +1,10 @@
 # Makefile for BugleOS minirootfs
-# BugleOS v1.0.0
+# BugleOS build; version configured via VERSION variable.
 # Copyright (C) Sebastiano Trombetta. All rights reserved.
 
 include config.mk
+
+$(info BugleOS v$(VERSION))
 
 HOST_ARCH 				?= $(shell uname -m)
 BUILD_ARCH 				?= $(if $(ARCH),$(ARCH),$(HOST_ARCH))

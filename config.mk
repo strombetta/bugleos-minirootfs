@@ -1,6 +1,6 @@
 # Configuration for BugleOS minirootfs build
 ARCHITECTURE	?= $(shell uname -m)
-VERSION			:= 1.0.0
+VERSION			?= 1.0.0
 TARGET			:= $(ARCHITECTURE)-linux-musl
 PREFIX			?= $(PWD)/toolchain
 SYSROOT			?= $(PWD)/sysroot
