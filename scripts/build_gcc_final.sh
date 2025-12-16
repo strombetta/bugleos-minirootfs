@@ -27,6 +27,8 @@ cd "$BUILD_DIR"
 
 #./contrib/download_prerequisites
 
+export PATH="${PREFIX}/bin:${PATH}"
+
 $SOURCE_DIR/configure \
     --target="$TARGET" \
     --prefix="$PREFIX" \
