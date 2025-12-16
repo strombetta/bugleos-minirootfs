@@ -29,6 +29,8 @@ rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
+export PATH="${PREFIX}/bin:${PATH}"
+
 $SOURCE_DIR/configure \
     --target="$TARGET" \
     --prefix="$PREFIX" \

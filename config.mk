@@ -12,6 +12,8 @@ TARGET := x86_64-linux-musl
 else
 TARGET := $(ARCHITECTURE)-linux-musl
 endif
+PREFIX_BOOTSTRAP ?= $(PWD)/toolchain-bootstrap
+SYSROOT_BOOTSTRAP ?= $(PWD)/sysroot-bootstrap
 PREFIX ?= $(PWD)/toolchain
 SYSROOT ?= $(PWD)/sysroot
 ROOTFS ?= $(PWD)/build/rootfs
