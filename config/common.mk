@@ -28,3 +28,9 @@ HOST_TARGET := $(shell \
   fi)
 TARGET ?= $(if $(HOST_TARGET),$(HOST_TARGET),$(error Unsupported host architecture '$(HOST_ARCH)'; please set TARGET explicitly))
 TARGET_ARCH := $(firstword $(subst -, ,$(TARGET)))
+
+JOBS ?= $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
+
+TAR ?= tar
+WGET ?= wget
+SHA256SUM ?= sha256sum

@@ -19,3 +19,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+ROOT_DIR ?= $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
+BUILDS_DIR ?= $(ROOT_DIR)/builds
+DOWNLOADS_DIR ?= $(ROOT_DIR)/downloads
+LOGS_DIR ?= $(ROOT_DIR)/logs
+OUTPUT_DIR ?= $(ROOT_DIR)/output
+SOURCES_DIR ?= $(ROOT_DIR)/sources
+TOOLCHAIN_DIR ?= $(ROOT_DIR)/toolchain
+
+BUSYBOX_STAMP :=$(BUILDS_DIR)/.busybox.stamp
+ROOTFS_STAMP :=$(BUILDS_DIR)/.rootfs.stamp
+IMAGE_TARBALL :=$(OUTPUT_DIR)/bugleos-minirootfs-$(VERSION)-$(ARCHITECTURE).tar.gz
+DOWNLOAD_STAMP :=$(DOWNLOADS_DIR)/.downloaded
