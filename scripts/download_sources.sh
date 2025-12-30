@@ -1,12 +1,27 @@
 #!/bin/sh
-# Copyright (c) 2025 Sebastiano Trombetta
-# SPDX-License-Identifier: MIT
 #
-# download_sources.sh - Download the source archives required for building the
-# cross toolchain and userland components.
+# Copyright (c) Sebastiano Trombetta. All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 set -eu
 
-# download_sources.sh TARGET PREFIX SYSROOT ROOTFS SOURCES BUILD BINUTILS_VERSION GCC_VERSION LINUX_VERSION MUSL_VERSION BUSYBOX_VERSION
 TARGET=$1
 PREFIX=$2
 SYSROOT=$3
@@ -28,7 +43,7 @@ BUSYBOX_URL="https://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2"
 
 mkdir -p "${SOURCES}"
 
-fetch() {
+download() {
     url=$1
     dest=$2
     if [ -f "$dest" ]; then
@@ -39,8 +54,5 @@ fetch() {
     fi
 }
 
-fetch "$BINUTILS_URL" "${SOURCES}/binutils-${BINUTILS_VERSION}.tar.xz"
-fetch "$GCC_URL" "${SOURCES}/gcc-${GCC_VERSION}.tar.xz"
-fetch "$LINUX_URL" "${SOURCES}/linux-${LINUX_VERSION}.tar.xz"
-fetch "$MUSL_URL" "${SOURCES}/musl-${MUSL_VERSION}.tar.gz"
-fetch "$BUSYBOX_URL" "${SOURCES}/busybox-${BUSYBOX_VERSION}.tar.bz2"
+download "$TOOLCHAIN_URL" "${SOURCES}/toolchain-${MUSL_VERSION}.tar.gz"
+download "$BUSYBOX_URL" "${SOURCES}/busybox-${BUSYBOX_VERSION}.tar.bz2"

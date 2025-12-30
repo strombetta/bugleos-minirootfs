@@ -19,45 +19,42 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-include config/common.mk
-include config/paths.mk
-include config/packages.mk
+include mk/config.mk
+include mk/helpers.mk
+include mk/packages.mk
+include mk/paths.mk
 
-.PHONY: all
+.PHONY: toolchain clean distclean sanity
 
-all: $(IMAGE_TARBALL)
+toolchain:
+	@$(MAKE) -f mk/toolchain.mk TARGET=$(TARGET) toolchain
 
-download: $(DOWNLOAD_STAMP)
+# $(DOWNLOAD_STAMP): $(SCRIPTS)/download_sources.sh config.mk | $(SOURCES)
+# 	@sh $(SCRIPTS)/download_sources.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(BINUTILS_VERSION)" "$(GCC_VERSION)" "$(LINUX_VERSION)" "$(MUSL_VERSION)" "$(BUSYBOX_VERSION)"
+# 	@touch $@
 
-# Download all sources
-SCRIPTS:=scripts
+# $(SOURCES):
+# 	@mkdir -p $@
 
-$(DOWNLOAD_STAMP): $(SCRIPTS)/download_sources.sh config.mk | $(SOURCES)
-	@sh $(SCRIPTS)/download_sources.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(BINUTILS_VERSION)" "$(GCC_VERSION)" "$(LINUX_VERSION)" "$(MUSL_VERSION)" "$(BUSYBOX_VERSION)"
-	@touch $@
+# $(TOOLCHAIN_STAMP): $(DOWNLOAD_STAMP) $(SCRIPTS)/build_binutils.sh config.mk
+# 	@sh $(SCRIPTS)/build_binutils.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(BINUTILS_VERSION)"
+# 	@touch $@
 
-$(SOURCES):
-	@mkdir -p $@
+# $(BUSYBOX_STAMP): $(TOOLCHAIN_STAMP) $(SCRIPTS)/build_busybox.sh config.mk
+# 	@sh $(SCRIPTS)/build_busybox.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(BUSYBOX_VERSION)"
+# 	@touch $@
 
-$(TOOLCHAIN_STAMP): $(DOWNLOAD_STAMP) $(SCRIPTS)/build_binutils.sh config.mk
-	@sh $(SCRIPTS)/build_binutils.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(BINUTILS_VERSION)"
-	@touch $@
+# $(ROOTFS_STAMP): $(BUSYBOX_STAMP) $(SCRIPTS)/create_rootfs_layout.sh config.mk
+# 	@sh $(SCRIPTS)/create_rootfs_layout.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(VERSION)"
+# 	@touch $@
 
-$(BUSYBOX_STAMP): $(GCC_FINAL_STAMP) $(SCRIPTS)/build_busybox.sh config.mk
-	@sh $(SCRIPTS)/build_busybox.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(BUSYBOX_VERSION)"
-	@touch $@
+# $(IMAGE_TARBALL): $(ROOTFS_STAMP) | $(OUTPUT)
+# 	@mkdir -p $(OUTPUT)
+# 	@sh -c 'chown -R 0:0 "$(ROOTFS)" 2>/dev/null || true'
+# 	@tar --numeric-owner --numeric-owner --owner=0 --group=0 -czf $(IMAGE_TARBALL) -C $(ROOTFS) .
 
-$(ROOTFS_STAMP): $(BUSYBOX_STAMP) $(SCRIPTS)/create_rootfs_layout.sh config.mk
-	@sh $(SCRIPTS)/create_rootfs_layout.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(VERSION)"
-	@touch $@
-
-$(IMAGE_TARBALL): $(ROOTFS_STAMP) | $(OUTPUT)
-	@mkdir -p $(OUTPUT)
-	@sh -c 'chown -R 0:0 "$(ROOTFS)" 2>/dev/null || true'
-	@tar --numeric-owner --numeric-owner --owner=0 --group=0 -czf $(IMAGE_TARBALL) -C $(ROOTFS) .
-
-$(OUTPUT):
-	@mkdir -p $@
+# $(OUTPUT):
+# 	@mkdir -p $@
 
 clean:
 	@rm -rf $(BUILDS_DIR) $(LOGS_DIR)
