@@ -55,6 +55,9 @@ $(TOOLCHAIN_DIR)/.done: $(TOOLCHAIN_STAMP)
 
 	$(Q)touch $@
 
+ensure-dirs:
+	@mkdir -p $(DOWNLOADS_DIR) $(TOOLCHAIN)
+
 ensure-toolchain: | ensure-dirs
 	$(call do_download,toolchain,$(ROOT_DIR)/scripts/fetch-sources.sh binutils,binutils-download)
 	$(call do_verify,toolchain,$(ROOT_DIR)/scripts/verify-checksums.sh binutils,binutils-verify)
