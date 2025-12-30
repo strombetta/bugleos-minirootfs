@@ -19,9 +19,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-TOOLCHAIN_VERSION := 1.0.4
-TOOLCHAIN_URL := https://github.com/strombetta/bugleos-make-toolchain/releases/download/v$(TOOLCHAIN_VERSION)/bugleos-toolchain-v$(TOOLCHAIN_VERSION)-arm64.tar.gz
-TOOLCHAIN_SHA256 := 6d543fbac2e208dd6103eb4a58e457805f50735bb3fc3980c695f5b7aa7466e2
 
 BUSYBOX_VERSION ?= 1.37.0
 BUSYBOX_URL := https://busybox.net/downloads/busybox-$(BUSYBOX_VERSION).tar.bz2

@@ -22,6 +22,11 @@
 THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
 include $(abspath $(dir $(THIS_MAKEFILE))/helpers.mk)
 
+TOOLCHAIN_VERSION := 1.0.4
+TOOLCHAIN_URL := https://github.com/strombetta/bugleos-make-toolchain/releases/download/v$(TOOLCHAIN_VERSION)/bugleos-toolchain-v$(TOOLCHAIN_VERSION)-arm64.tar.gz
+TOOLCHAIN_SHA256 := 6d543fbac2e208dd6103eb4a58e457805f50735bb3fc3980c695f5b7aa7466e2
+TOOLCHAIN_DIR ?= $(ROOT_DIR)/toolchain
+
 .PHONY: all
 all: toolchain
 
@@ -64,5 +69,5 @@ ensure-toolchain: | ensure-dirs
 	$(Q)touch $@
 
 unpack-toolchain: ensure-toolchain
-	@rm -rf $(BINUTILS_SRC_DIR)
-	@$(TAR) -xf $(BINUTILS_ARCHIVE) -C $(SOURCES_DIR)
+	@rm -rf $(TOOLCHAIN_DIR)
+	@$(TAR) -xf $(TOOLCHAIN_URL) -C $(TOOLCHAIN_DIR)

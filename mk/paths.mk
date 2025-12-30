@@ -26,7 +26,7 @@ DOWNLOADS_DIR ?= $(ROOT_DIR)/downloads
 LOGS_DIR ?= $(ROOT_DIR)/logs
 OUTPUT_DIR ?= $(ROOT_DIR)/output
 SOURCES_DIR ?= $(ROOT_DIR)/sources
-TOOLCHAIN_DIR ?= $(ROOT_DIR)/toolchain
+
 
 BUSYBOX_STAMP :=$(BUILDS_DIR)/.busybox.stamp
 DOWNLOAD_STAMP :=$(DOWNLOADS_DIR)/.downloaded
