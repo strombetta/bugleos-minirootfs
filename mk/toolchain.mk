@@ -31,9 +31,9 @@ TOOLCHAIN_DIR ?= $(ROOT_DIR)/toolchain
 all: toolchain
 
 .PHONY: toolchain
-toolchain: ensure-dirs $(TOOLCHAIN_DIR)/.done
+toolchain: $(TOOLCHAIN_DIR)/.done
 
-$(TOOLCHAIN_DIR)/.done: $(TOOLCHAIN_STAMP)
+$(TOOLCHAIN_DIR)/.done: ensure-toolchain
 	$(Q)rm -rf "$(TOOLCHAIN_DIR)"
 	$(Q)mkdir -p "$(TOOLCHAIN_DIR)"
 
