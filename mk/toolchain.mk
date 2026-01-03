@@ -64,7 +64,7 @@ ensure-dirs:
 	@mkdir -p $(DOWNLOADS_DIR) $(TOOLCHAIN)
 
 ensure-toolchain: | ensure-dirs
-	$(call do_download,toolchain,$(ROOT_DIR)/scripts/download_sources.sh $(TOOLCHAIN_URL),$(DOWNLOADS_DIR))
+	$(call do_download,toolchain,$(ROOT_DIR)/scripts/download_sources.sh $(TOOLCHAIN_URL),toolchain-download)
 	$(call do_verify,toolchain,$(ROOT_DIR)/scripts/verify-checksums.sh binutils,binutils-verify)
 	$(Q)touch $@
 
