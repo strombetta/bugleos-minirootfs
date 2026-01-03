@@ -23,7 +23,8 @@ THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
 include $(abspath $(dir $(THIS_MAKEFILE))/helpers.mk)
 
 TOOLCHAIN_VERSION := 1.0.4
-TOOLCHAIN_URL := https://github.com/strombetta/bugleos-make-toolchain/releases/download/v$(TOOLCHAIN_VERSION)/bugleos-toolchain-v$(TOOLCHAIN_VERSION)-arm64.tar.gz
+TOOLCHAIN_URL := https://github.com/strombetta/bugleos-make-toolchain/releases/download/v$(TOOLCHAIN_VERSION)/bugleos-toolchain-v$(TOOLCHAIN_VERSION)-$(HOST_ARCH).tar.gz
+TOOLCHAIN_TAR := bugleos-toolchain-v$(TOOLCHAIN_VERSION)-$(HOST_ARCH).tar.gz
 TOOLCHAIN_SHA256 := 6d543fbac2e208dd6103eb4a58e457805f50735bb3fc3980c695f5b7aa7466e2
 TOOLCHAIN_DIR ?= $(ROOT_DIR)/toolchain
 
@@ -64,7 +65,7 @@ ensure-dirs:
 	@mkdir -p $(DOWNLOADS_DIR) $(TOOLCHAIN) $(LOGS_DIR)
 
 ensure-toolchain: | ensure-dirs
-	$(call do_download,toolchain,$(ROOT_DIR)/scripts/download_sources.sh $(TOOLCHAIN_URL) $(DOWNLOADS_DIR),toolchain-download)
+	$(call do_download,toolchain,$(ROOT_DIR)/scripts/download_sources.sh $(TOOLCHAIN_URL) $(TOOLCHAIN_TAR),toolchain-download)
 	$(call do_verify,toolchain,$(ROOT_DIR)/scripts/verify-checksums.sh binutils,binutils-verify)
 	$(Q)touch $@
 
