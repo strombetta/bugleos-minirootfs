@@ -22,6 +22,9 @@
 
 set -eu
 
+URL=$1
+DESTINATION=$2
+
 download() {
     url=$1
     dest=$2
@@ -32,3 +35,5 @@ download() {
         wget -O "$dest" "$url"
     fi
 }
+
+download "$URL" "$DESTINATION"
