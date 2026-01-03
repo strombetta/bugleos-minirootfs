@@ -20,6 +20,7 @@
 # SOFTWARE.
 
 THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
+include $(abspath $(dir $(THIS_MAKEFILE))/config.mk)
 include $(abspath $(dir $(THIS_MAKEFILE))/helpers.mk)
 
 TOOLCHAIN_VERSION := 1.0.4
