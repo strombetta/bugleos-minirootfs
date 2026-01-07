@@ -27,9 +27,4 @@ LOGS_DIR ?= $(ROOT_DIR)/logs
 OUTPUT_DIR ?= $(ROOT_DIR)/output
 PROGRESS_DIR ?= $(ROOT_DIR)/progress
 SOURCES_DIR ?= $(ROOT_DIR)/sources
-
-BUSYBOX_STAMP :=$(BUILDS_DIR)/.busybox.stamp
-DOWNLOAD_STAMP :=$(DOWNLOADS_DIR)/.downloaded
 IMAGE_TARBALL :=$(OUTPUT_DIR)/bugleos-minirootfs-$(VERSION)-$(ARCHITECTURE).tar.gz
-ROOTFS_STAMP :=$(BUILDS_DIR)/.rootfs.stamp
-TOOLCHAIN_STAMP :=$(BUILDS_DIR)/.toolchain.stamp

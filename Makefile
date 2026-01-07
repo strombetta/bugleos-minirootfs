@@ -21,7 +21,6 @@
 
 include mk/config.mk
 include mk/helpers.mk
-include mk/packages.mk
 include mk/paths.mk
 
 .PHONY: toolchain busybox clean distclean sanity

@@ -19,6 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+MAKEFLAGS += --no-print-directory
+
 HOST_ARCH := $(shell uname -m)
 HOST_TARGET := $(shell \
   arch="$(HOST_ARCH)"; \
