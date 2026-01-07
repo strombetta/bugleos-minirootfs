@@ -39,7 +39,7 @@ $(PROGRESS_DIR)/.busybox-done: $(PROGRESS_DIR)/.busybox-unpacked
 	$(Q)touch $@
 
 $(PROGRESS_DIR)/.busybox-unpacked: $(PROGRESS_DIR)/.busybox-verified
-	$(call do_unpack,toolchain,$(ROOT_DIR)/scripts/unpack.sh $(BUSYBOX_TAR_PATH) $(BUSYBOX_DIR),toolchain-unpack)
+	$(call do_unpack,busybox,$(ROOT_DIR)/scripts/unpack.sh $(BUSYBOX_TAR_PATH) $(BUSYBOX_DIR),busybox-unpack)
 	$(Q)touch $@
 
 $(PROGRESS_DIR)/.busybox-verified: $(PROGRESS_DIR)/.busybox-downloaded
