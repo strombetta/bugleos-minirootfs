@@ -37,17 +37,10 @@ TOOLCHAIN_DIR ?= $(ROOT_DIR)/toolchain
 toolchain: $(PROGRESS_DIR)/.toolchain-done
 
 $(PROGRESS_DIR)/.toolchain-done: $(PROGRESS_DIR)/.toolchain-unpacked
-	$(Q)rm -rf "$(TOOLCHAIN_DIR)"
-	$(Q)mkdir -p "$(TOOLCHAIN_DIR)"
-
-	$(call do_step,EXTRACT,toolchain, \
-		$(MAKE) -f "$(THIS_MAKEFILE)" unpack-toolchain, \
-		toolchain-extract)
-
 	$(Q)touch $@
 
 $(PROGRESS_DIR)/.toolchain-unpacked: $(PROGRESS_DIR)/.toolchain-verified
-	@$(TAR) -xf $(TOOLCHAIN_TAR_PATH) -C $(TOOLCHAIN_DIR)
+	$(call do_unpack,toolchain,$(ROOT_DIR)/scripts/unpack.sh $(TOOLCHAIN_TAR_PATH) $(TOOLCHAIN_DIR),toolchain-unpack)
 	@touch $@
 
 $(PROGRESS_DIR)/.toolchain-verified: $(PROGRESS_DIR)/.toolchain-downloaded

@@ -46,6 +46,11 @@ define do_verify
 	$(call do_step,VERIFY,$(1),$(2),$(3))
 endef
 
+# $(call do_unpack, LABEL, COMMAND, LOGFILE)
+define do_unpack
+	$(call do_step,UNPACK,$(1),$(2),$(3))
+endef
+
 # Quote a shell string safely for: sh -c '<string>'
 # It wraps the whole command in single quotes and escapes any embedded single quote.
 # Example: abc'def  ->  'abc'"'"'def'
