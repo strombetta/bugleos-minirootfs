@@ -26,7 +26,7 @@ ARCHIVE=$2
 
 verify_checksum() {
   local checksum="$1" archive="$2"
-  ( cd "$DOWNLOADS_DIR" && printf '%s  %s\n' "$checksum" "$archive" | sha256sum --quiet -c - )
+  ( printf '%s  %s\n' "$checksum" "$archive" | sha256sum --quiet -c - )
 }
 
 verify_checksum $CHECKSUM $ARCHIVE
