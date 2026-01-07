@@ -29,7 +29,7 @@ BUSYBOX_TAR := busybox-$(BUSYBOX_VERSION).tar.bz2
 BUSYBOX_TAR_PATH := $(DOWNLOADS_DIR)/$(BUSYBOX_TAR)
 BUSYBOX_SIG := https://busybox.net/downloads/busybox-$(BUSYBOX_VERSION).tar.bz2.sig
 BUSYBOX_SHA256 := 3311dff32e746499f4df0d5df04d7eb396382d7e108bb9250e7b519b837043a4
-BUSYBOX_DIR ?= $(BUILD_DIR)/busybox
+BUSYBOX_DIR ?= $(BUILDS_DIR)
 
 .PHONY: busybox ensure-dirs
 
@@ -39,7 +39,7 @@ $(PROGRESS_DIR)/.busybox-done: $(PROGRESS_DIR)/.busybox-unpacked
 	$(Q)touch $@
 
 $(PROGRESS_DIR)/.busybox-unpacked: $(PROGRESS_DIR)/.busybox-verified
-	$(call do_unpack,busybox,$(ROOT_DIR)/scripts/unpack.sh $(BUSYBOX_TAR_PATH) $(BUSYBOX_DIR),busybox-unpack)
+	$(call do_unpack,busybox,$(ROOT_DIR)/scripts/unpack.sh $(BUSYBOX_TAR_PATH) $(BUILDS_DIR),busybox-unpack)
 	$(Q)touch $@
 
 $(PROGRESS_DIR)/.busybox-verified: $(PROGRESS_DIR)/.busybox-downloaded
