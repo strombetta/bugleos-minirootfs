@@ -69,7 +69,7 @@ ensure-dirs:
 
 ensure-toolchain: | ensure-dirs
 	$(call do_download,toolchain,$(ROOT_DIR)/scripts/download_sources.sh $(TOOLCHAIN_URL) $(TOOLCHAIN_TAR_PATH),toolchain-download)
-	$(call do_verify,toolchain,$(ROOT_DIR)/scripts/verify-checksum.sh "$(TOOLCHAIN_SHA256_$(HOST_ARCH))" $(TOOLCHAIN_TAR_PATH),toolchain-verify)
+	$(call do_verify,toolchain,$(ROOT_DIR)/scripts/verify-checksum.sh $(TOOLCHAIN_SHA256_$(HOST_ARCH)) $(TOOLCHAIN_TAR_PATH),toolchain-verify)
 	$(Q)touch $@
 
 unpack-toolchain: ensure-toolchain
