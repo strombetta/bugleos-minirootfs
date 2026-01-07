@@ -25,7 +25,7 @@ set -eu
 unpack() {
     local file="$1" dest="$2"
 
-    if [ -f "$file" ]; then
+    if [ ! -f "$file" ]; then
         echo "Error: File $file does not exist."
         exit 1
     else
