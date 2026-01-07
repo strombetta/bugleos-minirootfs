@@ -22,12 +22,8 @@
 
 set -eu
 
-URL=$1
-DESTINATION=$2
-
 download() {
-    url=$1
-    dest=$2
+    local url="$1" dest="$2"
     if [ -f "$dest" ]; then
         echo "Skipping download of $dest (already exists)"
     else
@@ -36,4 +32,4 @@ download() {
     fi
 }
 
-download "$URL" "$DESTINATION"
+download "$1" "$2"

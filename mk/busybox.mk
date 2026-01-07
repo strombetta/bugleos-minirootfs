@@ -35,7 +35,11 @@ BUSYBOX_DIR ?= $(BUILDS_DIR)
 
 busybox: $(PROGRESS_DIR)/.busybox-done
 
-$(PROGRESS_DIR)/.busybox-done: $(PROGRESS_DIR)/.busybox-unpacked
+$(PROGRESS_DIR)/.busybox-done: $(PROGRESS_DIR)/.busybox-built
+	$(Q)touch $@
+
+$(PROGRESS_DIR)/.busybox-built: $(PROGRESS_DIR)/.busybox-unpacked
+	$(call do_step,busybox,$(ROOT_DIR)/scripts/build_busybox.sh "$(TARGET)" "$(TOOLCHAIN_DIR)" "$(TOOLCHAIN_DIR)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(BUSYBOX_VERSION)",busybox-unpack)
 	$(Q)touch $@
 
 $(PROGRESS_DIR)/.busybox-unpacked: $(PROGRESS_DIR)/.busybox-verified
@@ -43,7 +47,7 @@ $(PROGRESS_DIR)/.busybox-unpacked: $(PROGRESS_DIR)/.busybox-verified
 	$(Q)touch $@
 
 $(PROGRESS_DIR)/.busybox-verified: $(PROGRESS_DIR)/.busybox-downloaded
-	$(call do_verify,busybox,$(ROOT_DIR)/scripts/verify-checksum.sh $(BUSYBOX_SHA256) $(BUSYBOX_TAR_PATH),busybox-verify)
+	$(call do_verify,busybox,$(ROOT_DIR)/scripts/verify.sh $(BUSYBOX_SHA256) $(BUSYBOX_TAR_PATH),busybox-verify)
 	$(Q)touch $@
 
 $(PROGRESS_DIR)/.busybox-downloaded: | ensure-dirs
@@ -51,4 +55,4 @@ $(PROGRESS_DIR)/.busybox-downloaded: | ensure-dirs
 	$(Q)touch $@
 
 ensure-dirs:
-	@mkdir -p $(DOWNLOADS_DIR) $(TOOLCHAIN_DIR) $(LOGS_DIR) $(PROGRESS_DIR) $(BUILDS_DIR)
+	@mkdir -p $(DOWNLOADS_DIR) $(ROOTFS_DIR) $(LOGS_DIR) $(PROGRESS_DIR) $(BUILDS_DIR)

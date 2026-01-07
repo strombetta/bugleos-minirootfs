@@ -21,12 +21,9 @@
 
 set -euo pipefail
 
-CHECKSUM=$1
-ARCHIVE=$2
-
 verify_checksum() {
   local checksum="$1" archive="$2"
   ( printf '%s  %s\n' "$checksum" "$archive" | sha256sum --quiet -c - )
 }
 
-verify_checksum $CHECKSUM $ARCHIVE
+verify_checksum "$1" "$2"
