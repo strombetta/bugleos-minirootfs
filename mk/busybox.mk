@@ -51,4 +51,4 @@ $(PROGRESS_DIR)/.busybox-downloaded: | ensure-dirs
 	$(Q)touch $@
 
 ensure-dirs:
-	@mkdir -p $(DOWNLOADS_DIR) $(TOOLCHAIN_DIR) $(LOGS_DIR) $(PROGRESS_DIR)
+	@mkdir -p $(DOWNLOADS_DIR) $(TOOLCHAIN_DIR) $(LOGS_DIR) $(PROGRESS_DIR) $(BUILDS_DIR)
