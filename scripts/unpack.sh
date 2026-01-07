@@ -22,9 +22,6 @@
 
 set -eu
 
-FILE=$1
-DESTINATION=$2
-
 unpack() {
     local file="$1" dest="$2"
 
@@ -33,4 +30,4 @@ unpack() {
     tar -xf "$file" -C "$dest"
 }
 
-unpack "$FILE" "$DESTINATION"
+unpack "$1" "$2"
