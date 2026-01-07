@@ -66,7 +66,7 @@ $(TOOLCHAIN_DIR)/.done: ensure-toolchain
 	$(Q)touch $@
 
 ensure-dirs:
-	@mkdir -p $(DOWNLOADS_DIR) $(TOOLCHAIN) $(LOGS_DIR)
+	@mkdir -p $(DOWNLOADS_DIR) $(TOOLCHAIN_DIR) $(LOGS_DIR)
 
 ensure-toolchain: | ensure-dirs
 	$(call do_download,toolchain,$(ROOT_DIR)/scripts/download_sources.sh $(TOOLCHAIN_URL) $(TOOLCHAIN_TAR_PATH),toolchain-download)
@@ -75,4 +75,5 @@ ensure-toolchain: | ensure-dirs
 
 unpack-toolchain: ensure-toolchain
 	@rm -rf $(TOOLCHAIN_DIR)
+	@mkdir -p $(TOOLCHAIN_DIR)
 	@$(TAR) -xf $(TOOLCHAIN_TAR_PATH) -C $(TOOLCHAIN_DIR)
