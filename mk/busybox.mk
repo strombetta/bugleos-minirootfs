@@ -23,32 +23,31 @@ THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
 include $(abspath $(dir $(THIS_MAKEFILE))/config.mk)
 include $(abspath $(dir $(THIS_MAKEFILE))/helpers.mk)
 
-TOOLCHAIN_VERSION := 1.0.4
-TOOLCHAIN_URL := https://github.com/strombetta/bugleos-make-toolchain/releases/download/v$(TOOLCHAIN_VERSION)/bugleos-toolchain-$(TOOLCHAIN_VERSION)-$(HOST_ARCH).tar.gz
-TOOLCHAIN_TAR := bugleos-toolchain-$(TOOLCHAIN_VERSION)-$(HOST_ARCH).tar.gz
-TOOLCHAIN_TAR_PATH := $(DOWNLOADS_DIR)/$(TOOLCHAIN_TAR)
-TOOLCHAIN_SHA256_aarch64 := 261097c744cbbe501798f380c4a55905165521b4b79f57175ee7bc885a307709
-TOOLCHAIN_SHA256_x86_64 := f960df5d1ab73765889d22d6690ab151faa21b01ccb08aa3be708814d1cc4fe0
-TOOLCHAIN_SHA256 := $(TOOLCHAIN_SHA256_$(HOST_ARCH))
-TOOLCHAIN_DIR ?= $(ROOT_DIR)/toolchain
+BUSYBOX_VERSION ?= 1.37.0
+BUSYBOX_URL := https://busybox.net/downloads/busybox-$(BUSYBOX_VERSION).tar.bz2
+BUSYBOX_TAR := busybox-$(BUSYBOX_VERSION).tar.bz2
+BUSYBOX_TAR_PATH := $(DOWNLOADS_DIR)/$(TOOLCHAIN_TAR)
+BUSYBOX_SIG := https://busybox.net/downloads/busybox-$(BUSYBOX_VERSION).tar.bz2.sig
+BUSYBOX_SHA256 := 3311dff32e746499f4df0d5df04d7eb396382d7e108bb9250e7b519b837043a4
+BUSYBOX_DIR ?= $(BUILD_DIR)/busybox
 
-.PHONY: toolchain	ensure-dirs
+.PHONY: busybox ensure-dirs
 
-toolchain: $(PROGRESS_DIR)/.toolchain-done
+busybox: $(PROGRESS_DIR)/.busybox-done
 
-$(PROGRESS_DIR)/.toolchain-done: $(PROGRESS_DIR)/.toolchain-unpacked
+$(PROGRESS_DIR)/.busybox-done: $(PROGRESS_DIR)/.busybox-unpacked
 	$(Q)touch $@
 
-$(PROGRESS_DIR)/.toolchain-unpacked: $(PROGRESS_DIR)/.toolchain-verified
-	$(call do_unpack,toolchain,$(ROOT_DIR)/scripts/unpack.sh $(TOOLCHAIN_TAR_PATH) $(TOOLCHAIN_DIR),toolchain-unpack)
+$(PROGRESS_DIR)/.busybox-unpacked: $(PROGRESS_DIR)/.busybox-verified
+	$(call do_unpack,toolchain,$(ROOT_DIR)/scripts/unpack.sh $(BUSYBOX_TAR_PATH) $(BUSYBOX_DIR),toolchain-unpack)
 	$(Q)touch $@
 
-$(PROGRESS_DIR)/.toolchain-verified: $(PROGRESS_DIR)/.toolchain-downloaded
-	$(call do_verify,toolchain,$(ROOT_DIR)/scripts/verify-checksum.sh $(TOOLCHAIN_SHA256) $(TOOLCHAIN_TAR_PATH),toolchain-verify)
+$(PROGRESS_DIR)/.busybox-verified: $(PROGRESS_DIR)/.busybox-downloaded
+	$(call do_verify,busybox,$(ROOT_DIR)/scripts/verify-checksum.sh $(BUSYBOX_SHA256) $(BUSYBOX_TAR_PATH),busybox-verify)
 	$(Q)touch $@
 
-$(PROGRESS_DIR)/.toolchain-downloaded: ensure-dirs
-	$(call do_download,toolchain,$(ROOT_DIR)/scripts/download_sources.sh $(TOOLCHAIN_URL) $(TOOLCHAIN_TAR_PATH),toolchain-download)
+$(PROGRESS_DIR)/.busybox-downloaded: ensure-dirs
+	$(call do_download,busybox,$(ROOT_DIR)/scripts/download_sources.sh $(BUSYBOX_URL) $(BUSYBOX_TAR_PATH),busybox-download)
 	$(Q)touch $@
 
 ensure-dirs:

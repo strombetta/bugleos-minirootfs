@@ -20,7 +20,3 @@
 # SOFTWARE.
 
 
-BUSYBOX_VERSION ?= 1.37.0
-BUSYBOX_URL := https://busybox.net/downloads/busybox-$(BUSYBOX_VERSION).tar.bz2
-BUSYBOX_SIG := https://busybox.net/downloads/busybox-$(BUSYBOX_VERSION).tar.bz2.sig
-BUSYBOX_SHA256 := 3311dff32e746499f4df0d5df04d7eb396382d7e108bb9250e7b519b837043a4
