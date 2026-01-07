@@ -50,7 +50,7 @@ $(PROGRESS_DIR)/.busybox-verified: $(PROGRESS_DIR)/.busybox-downloaded
 	$(Q)touch $@
 
 $(PROGRESS_DIR)/.busybox-downloaded: | ensure-dirs
-	$(call do_download,busybox,$(ROOT_DIR)/scripts/download_sources.sh $(BUSYBOX_URL) $(BUSYBOX_TAR_PATH),busybox-download)
+	$(call do_download,busybox,$(ROOT_DIR)/scripts/download.sh $(BUSYBOX_URL) $(BUSYBOX_TAR_PATH),busybox-download)
 	$(Q)touch $@
 
 ensure-dirs:
