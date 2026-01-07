@@ -27,8 +27,9 @@ TOOLCHAIN_VERSION := 1.0.4
 TOOLCHAIN_URL := https://github.com/strombetta/bugleos-make-toolchain/releases/download/v$(TOOLCHAIN_VERSION)/bugleos-toolchain-$(TOOLCHAIN_VERSION)-$(HOST_ARCH).tar.gz
 TOOLCHAIN_TAR := bugleos-toolchain-$(TOOLCHAIN_VERSION)-$(HOST_ARCH).tar.gz
 TOOLCHAIN_TAR_PATH := $(DOWNLOADS_DIR)/$(TOOLCHAIN_TAR)
-TOOLCHAIN_SHA256_AARCH64 := 261097c744cbbe501798f380c4a55905165521b4b79f57175ee7bc885a307709
-TOOLCHAIN_SHA256_X86_64 := f960df5d1ab73765889d22d6690ab151faa21b01ccb08aa3be708814d1cc4fe0
+TOOLCHAIN_SHA256_aarch64 := 261097c744cbbe501798f380c4a55905165521b4b79f57175ee7bc885a307709
+TOOLCHAIN_SHA256_x86_64 := f960df5d1ab73765889d22d6690ab151faa21b01ccb08aa3be708814d1cc4fe0
+TOOLCHAIN_SHA256 := $(TOOLCHAIN_SHA256_$(HOST_ARCH))
 TOOLCHAIN_DIR ?= $(ROOT_DIR)/toolchain
 
 .PHONY: all
@@ -69,9 +70,9 @@ ensure-dirs:
 
 ensure-toolchain: | ensure-dirs
 	$(call do_download,toolchain,$(ROOT_DIR)/scripts/download_sources.sh $(TOOLCHAIN_URL) $(TOOLCHAIN_TAR_PATH),toolchain-download)
-	$(call do_verify,toolchain,$(ROOT_DIR)/scripts/verify-checksum.sh $(TOOLCHAIN_SHA256_$(HOST_ARCH)) $(TOOLCHAIN_TAR_PATH),toolchain-verify)
+	$(call do_verify,toolchain,$(ROOT_DIR)/scripts/verify-checksum.sh $(TOOLCHAIN_SHA256) $(TOOLCHAIN_TAR_PATH),toolchain-verify)
 	$(Q)touch $@
 
 unpack-toolchain: ensure-toolchain
 	@rm -rf $(TOOLCHAIN_DIR)
-	@$(TAR) -xf $(TOOLCHAIN_URL) -C $(TOOLCHAIN_DIR)
+	@$(TAR) -xf $(TOOLCHAIN_TAR_PATH) -C $(TOOLCHAIN_DIR)
