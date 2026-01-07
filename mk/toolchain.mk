@@ -47,7 +47,7 @@ $(PROGRESS_DIR)/.toolchain-verified: $(PROGRESS_DIR)/.toolchain-downloaded
 	$(call do_verify,toolchain,$(ROOT_DIR)/scripts/verify-checksum.sh $(TOOLCHAIN_SHA256) $(TOOLCHAIN_TAR_PATH),toolchain-verify)
 	$(Q)touch $@
 
-$(PROGRESS_DIR)/.toolchain-downloaded: ensure-dirs
+$(PROGRESS_DIR)/.toolchain-downloaded: | ensure-dirs
 	$(call do_download,toolchain,$(ROOT_DIR)/scripts/download_sources.sh $(TOOLCHAIN_URL) $(TOOLCHAIN_TAR_PATH),toolchain-download)
 	$(Q)touch $@
 

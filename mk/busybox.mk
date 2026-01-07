@@ -46,7 +46,7 @@ $(PROGRESS_DIR)/.busybox-verified: $(PROGRESS_DIR)/.busybox-downloaded
 	$(call do_verify,busybox,$(ROOT_DIR)/scripts/verify-checksum.sh $(BUSYBOX_SHA256) $(BUSYBOX_TAR_PATH),busybox-verify)
 	$(Q)touch $@
 
-$(PROGRESS_DIR)/.busybox-downloaded: ensure-dirs
+$(PROGRESS_DIR)/.busybox-downloaded: | ensure-dirs
 	$(call do_download,busybox,$(ROOT_DIR)/scripts/download_sources.sh $(BUSYBOX_URL) $(BUSYBOX_TAR_PATH),busybox-download)
 	$(Q)touch $@
 
