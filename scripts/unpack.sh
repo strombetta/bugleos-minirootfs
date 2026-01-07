@@ -25,9 +25,12 @@ set -eu
 unpack() {
     local file="$1" dest="$2"
 
-    [[ -f "$file" ]] || { echo "Error: File $file does not exist."; exit 1; }
-
-    tar -xf "$file" -C "$dest"
+    if [ -f "$file" ]; then
+        echo "Error: File $file does not exist."
+        exit 1
+    else
+        tar -xf "$file" -C "$dest"
+    fi
 }
 
 unpack "$1" "$2"
