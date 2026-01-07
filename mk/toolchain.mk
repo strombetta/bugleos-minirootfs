@@ -32,13 +32,11 @@ TOOLCHAIN_SHA256_x86_64 := f960df5d1ab73765889d22d6690ab151faa21b01ccb08aa3be708
 TOOLCHAIN_SHA256 := $(TOOLCHAIN_SHA256_$(HOST_ARCH))
 TOOLCHAIN_DIR ?= $(ROOT_DIR)/toolchain
 
-.PHONY: all
-all: toolchain
+.PHONY: toolchain	ensure-dirs
 
-.PHONY: toolchain
-toolchain: $(TOOLCHAIN_DIR)/.done
+toolchain: $(PROGRESS_DIR)/.toolchain-done
 
-$(TOOLCHAIN_DIR)/.done: ensure-toolchain
+$(PROGRESS_DIR)/.toolchain-done: $(PROGRESS_DIR)/.toolchain-unpacked
 	$(Q)rm -rf "$(TOOLCHAIN_DIR)"
 	$(Q)mkdir -p "$(TOOLCHAIN_DIR)"
 
@@ -46,34 +44,19 @@ $(TOOLCHAIN_DIR)/.done: ensure-toolchain
 		$(MAKE) -f "$(THIS_MAKEFILE)" unpack-toolchain, \
 		toolchain-extract)
 
-	$(call do_step,INSTALL,toolchain, \
-		$(call with_host_env, \
-			$(MAKE) -C "$(LINUX_SRC_DIR)" O="$(LINUX_HEADERS_BUILD_DIR)" \
-				ARCH="$(LINUX_ARCH)" \
-				INSTALL_HDR_PATH="$(SYSROOT)/usr" \
-				headers_install \
-		), \
-		toolchain-install)
-
-	$(call do_step,CHECK,toolchain, \
-		$(call with_host_env, \
-			set -eu; \
-			test -f "$(SYSROOT)/usr/include/linux/version.h"; \
-			test -f "$(SYSROOT)/usr/include/asm/unistd.h" || test -f "$(SYSROOT)/usr/include/asm-generic/unistd.h"; \
-		), \
-		toolchain-check)
-
 	$(Q)touch $@
 
-ensure-dirs:
-	@mkdir -p $(DOWNLOADS_DIR) $(TOOLCHAIN_DIR) $(LOGS_DIR)
+$(PROGRESS_DIR)/.toolchain-unpacked: $(PROGRESS_DIR)/.toolchain-verified
+	@$(TAR) -xf $(TOOLCHAIN_TAR_PATH) -C $(TOOLCHAIN_DIR)
+	@touch $@
 
-ensure-toolchain: | ensure-dirs
-	$(call do_download,toolchain,$(ROOT_DIR)/scripts/download_sources.sh $(TOOLCHAIN_URL) $(TOOLCHAIN_TAR_PATH),toolchain-download)
+$(PROGRESS_DIR)/.toolchain-verified: $(PROGRESS_DIR)/.toolchain-downloaded
 	$(call do_verify,toolchain,$(ROOT_DIR)/scripts/verify-checksum.sh $(TOOLCHAIN_SHA256) $(TOOLCHAIN_TAR_PATH),toolchain-verify)
 	$(Q)touch $@
 
-unpack-toolchain: ensure-toolchain
-	@rm -rf $(TOOLCHAIN_DIR)
-	@mkdir -p $(TOOLCHAIN_DIR)
-	@$(TAR) -xf $(TOOLCHAIN_TAR_PATH) -C $(TOOLCHAIN_DIR)
+$(PROGRESS_DIR)/.toolchain-downloaded: ensure-dirs
+	$(call do_download,toolchain,$(ROOT_DIR)/scripts/download_sources.sh $(TOOLCHAIN_URL) $(TOOLCHAIN_TAR_PATH),toolchain-download)
+	$(Q)touch $@
+
+ensure-dirs:
+	@mkdir -p $(DOWNLOADS_DIR) $(TOOLCHAIN_DIR) $(LOGS_DIR) $(PROGRESS_DIR)
