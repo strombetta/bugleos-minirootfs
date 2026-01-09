@@ -38,7 +38,7 @@ $(PROGRESS_DIR)/.busybox-done: $(PROGRESS_DIR)/.busybox-built
 	$(Q)touch $@
 
 $(PROGRESS_DIR)/.busybox-built: $(PROGRESS_DIR)/.busybox-unpacked
-	$(call do_step,BUILD,busybox,$(ROOT_DIR)/scripts/build_busybox.sh "$(TARGET)" "$(TOOLCHAIN_DIR)" "$(TOOLCHAIN_DIR)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(BUSYBOX_VERSION)",busybox-build)
+	$(call do_step,BUILD,busybox,$(ROOT_DIR)/scripts/build_busybox.sh "$(TARGET)" "$(TOOLCHAIN_DIR)" "$(TOOLCHAIN_DIR)" "$(ROOTFS_DIR)" "$(SOURCES_DIR)" "$(BUILDS_DIR)" "$(BUSYBOX_VERSION)",busybox-build)
 	$(Q)touch $@
 
 $(PROGRESS_DIR)/.busybox-unpacked: $(PROGRESS_DIR)/.busybox-verified
