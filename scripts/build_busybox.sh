@@ -52,8 +52,11 @@ rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
-make -C "$SOURCE_DIR" O="$BUILD_DIR" ARCH="$KERNEL_ARCH" CROSS_COMPILE="${TARGET}-" distclean || true
-make -C "$SOURCE_DIR" O="$BUILD_DIR" ARCH="$KERNEL_ARCH" CROSS_COMPILE="${TARGET}-" defconfig
+make -C "$SOURCE_DIR" O="$BUILD_DIR" \
+    ARCH="$KERNEL_ARCH" CROSS_COMPILE="${TARGET}-" distclean || true
+
+make -C "$SOURCE_DIR" O="$BUILD_DIR" \
+    ARCH="$KERNEL_ARCH" CROSS_COMPILE="${TARGET}-" defconfig
 
 # Enable static build
 sed -e 's/# CONFIG_STATIC is not set/CONFIG_STATIC=y/' -i .config
@@ -71,5 +74,12 @@ sed -e 's/CONFIG_SCRIPTREPLAY=y/# CONFIG_SCRIPTREPLAY is not set/' -i .config
 sed -e 's/CONFIG_SETARCH=y/# CONFIG_SETARCH is not set/' -i .config
 sed -e 's/CONFIG_VI=y/# CONFIG_VI is not set/' -i .config
 		
-make -C "$SOURCE_DIR" O="$BUILD_DIR" CROSS_COMPILE="${TARGET}-" CC="${PREFIX}/bin/${TARGET}-gcc" AR="${PREFIX}/bin/${TARGET}-ar" STRIP="${PREFIX}/bin/${TARGET}-strip" -j$(nproc)
-make -C "$SOURCE_DIR" O="$BUILD_DIR" CROSS_COMPILE="${TARGET}-" CC="${PREFIX}/bin/${TARGET}-gcc" AR="${PREFIX}/bin/${TARGET}-ar" STRIP="${PREFIX}/bin/${TARGET}-strip" CONFIG_PREFIX="$ROOTFS" install
+make -C "$SOURCE_DIR" O="$BUILD_DIR" \
+  ARCH="$KERNEL_ARCH" CROSS_COMPILE="${TARGET}-" \
+  CC="${PREFIX}/bin/${TARGET}-gcc" AR="${PREFIX}/bin/${TARGET}-ar" STRIP="${PREFIX}/bin/${TARGET}-strip" \
+  -j"$(nproc)"
+
+make -C "$SOURCE_DIR" O="$BUILD_DIR" \
+  ARCH="$KERNEL_ARCH" CROSS_COMPILE="${TARGET}-" \
+  CC="${PREFIX}/bin/${TARGET}-gcc" AR="${PREFIX}/bin/${TARGET}-ar" STRIP="${PREFIX}/bin/${TARGET}-strip" \
+  CONFIG_PREFIX="$ROOTFS" install

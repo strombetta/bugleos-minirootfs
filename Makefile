@@ -65,7 +65,7 @@ clean:
 distclean: clean
 	@rm -rf $(OUTPUT)
 
-mrproper:
+mrproper: distclean
 	@rm -rf $(SOURCES_DIR) $(TOOLCHAIN_DIR) $(DOWNLOADS_DIR) $(PROGRESS_DIR)
 
 sanity:
