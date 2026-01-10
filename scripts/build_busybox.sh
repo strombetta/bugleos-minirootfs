@@ -73,6 +73,12 @@ sed -e 's/CONFIG_RPM=y/# CONFIG_RPM is not set/' -i .config
 sed -e 's/CONFIG_SCRIPTREPLAY=y/# CONFIG_SCRIPTREPLAY is not set/' -i .config
 sed -e 's/CONFIG_SETARCH=y/# CONFIG_SETARCH is not set/' -i .config
 sed -e 's/CONFIG_VI=y/# CONFIG_VI is not set/' -i .config
+
+echo "TARGET=$TARGET"
+echo "KERNEL_ARCH=$KERNEL_ARCH"
+echo "CC=${PREFIX}/bin/${TARGET}-gcc"
+"${PREFIX}/bin/${TARGET}-gcc" -dumpmachine
+"${PREFIX}/bin/${TARGET}-gcc" -dM -E - </dev/null | grep -E '__aarch64__|__x86_64__' || true
 		
 make -C "$SOURCE_DIR" O="$BUILD_DIR" \
   ARCH="$KERNEL_ARCH" CROSS_COMPILE="${TARGET}-" \
