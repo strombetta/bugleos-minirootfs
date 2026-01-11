@@ -51,6 +51,7 @@ jobs:
 
       - name: Write version metadata
         run: |
+          echo "${VERSION}" > VERSION
           echo "VERSION=${VERSION}" | tee version.env
           echo "VERSION_FILE=${GITHUB_WORKSPACE}/version.env" >> "$GITHUB_ENV"
 

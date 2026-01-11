@@ -21,6 +21,13 @@
 
 MAKEFLAGS += --no-print-directory
 
+CONFIG_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+ROOT_DIR ?= $(abspath $(CONFIG_DIR)/..)
+
+VERSION_FILE ?= $(ROOT_DIR)/VERSION
+VERSION ?= $(strip $(shell cat "$(VERSION_FILE)" 2>/dev/null))
+VERSION ?= 0.0.0
+
 HOST_ARCH := $(shell uname -m)
 HOST_TARGET := $(shell \
   arch="$(HOST_ARCH)"; \

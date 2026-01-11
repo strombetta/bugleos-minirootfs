@@ -34,20 +34,13 @@ busybox: toolchain
 rootfs: busybox
 	@$(MAKE) -f mk/rootfs.mk TARGET=$(TARGET) VERSION=$(VERSION) rootfs
 
-# $(ROOTFS_STAMP): $(BUSYBOX_STAMP) $(SCRIPTS)/create_rootfs_layout.sh config.mk
-# 	@sh $(SCRIPTS)/create_rootfs_layout.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(VERSION)"
-# 	@touch $@
-
 # $(IMAGE_TARBALL): $(ROOTFS_STAMP) | $(OUTPUT)
 # 	@mkdir -p $(OUTPUT)
 # 	@sh -c 'chown -R 0:0 "$(ROOTFS)" 2>/dev/null || true'
 # 	@tar --numeric-owner --numeric-owner --owner=0 --group=0 -czf $(IMAGE_TARBALL) -C $(ROOTFS) .
 
-# $(OUTPUT):
-# 	@mkdir -p $@
-
 clean:
-	@rm -rf $(BUILDS_DIR) $(LOGS_DIR) $(ROOTFS) $(IMAGE_TARBALL)
+	@rm -rf $(BUILDS_DIR) $(LOGS_DIR) $(ROOTFS_DIR) $(IMAGE_TARBALL)
 
 distclean: clean
 	@rm -rf $(OUTPUT)
