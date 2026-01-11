@@ -23,7 +23,9 @@ include mk/config.mk
 include mk/helpers.mk
 include mk/paths.mk
 
-.PHONY: toolchain busybox rootfs clean distclean sanity
+.DEFAULT_GOAL := image
+
+.PHONY: toolchain busybox rootfs image clean distclean sanity
 
 toolchain:
 	@$(MAKE) -f mk/toolchain.mk TARGET=$(TARGET) toolchain
@@ -34,10 +36,12 @@ busybox: toolchain
 rootfs: busybox
 	@$(MAKE) -f mk/rootfs.mk TARGET=$(TARGET) VERSION=$(VERSION) rootfs
 
-# $(IMAGE_TARBALL): $(ROOTFS_STAMP) | $(OUTPUT)
-# 	@mkdir -p $(OUTPUT)
-# 	@sh -c 'chown -R 0:0 "$(ROOTFS)" 2>/dev/null || true'
-# 	@tar --numeric-owner --numeric-owner --owner=0 --group=0 -czf $(IMAGE_TARBALL) -C $(ROOTFS) .
+image: $(IMAGE_TARBALL)
+
+$(IMAGE_TARBALL): rootfs
+	@mkdir -p $(OUTPUT_DIR)
+	@sh -c 'chown -R 0:0 "$(ROOTFS_DIR)" 2>/dev/null || true'
+	@$(TAR) --numeric-owner --owner=0 --group=0 -czf $(IMAGE_TARBALL) -C $(ROOTFS_DIR) .
 
 clean:
 	@rm -rf $(BUILDS_DIR) $(LOGS_DIR) $(ROOTFS_DIR) $(IMAGE_TARBALL)
