@@ -89,7 +89,7 @@ $(PROGRESS_DIR)/.rootfs-layout: | ensure-dirs
 				> "$(ROOTFS_DIR)/etc/profile.d/motd.sh"; \
 			printf '%s\n' \
 				'#!/bin/sh' \
-				'PS1='"'"'\e[33m\u@\h\e[0m:\e[96m\w\e[0m \e[35m\\$\e[0m '"'"'' \
+				"PS1='\\e[33m\\u@\\h\\e[0m:\\e[96m\\w\\e[0m \\e[35m\\\$\\e[0m '" \
 				> "$(ROOTFS_DIR)/etc/profile.d/prompt.sh"), \
 		rootfs-layout)
 	$(Q)touch $@
