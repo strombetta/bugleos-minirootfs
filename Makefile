@@ -23,7 +23,7 @@ include mk/config.mk
 include mk/helpers.mk
 include mk/paths.mk
 
-.PHONY: toolchain busybox clean distclean sanity
+.PHONY: toolchain busybox rootfs clean distclean sanity
 
 toolchain:
 	@$(MAKE) -f mk/toolchain.mk TARGET=$(TARGET) toolchain
@@ -31,20 +31,8 @@ toolchain:
 busybox: toolchain
 	@$(MAKE) -f mk/busybox.mk TARGET=$(TARGET) busybox
 
-# $(DOWNLOAD_STAMP): $(SCRIPTS)/download_sources.sh config.mk | $(SOURCES)
-# 	@sh $(SCRIPTS)/download_sources.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(BINUTILS_VERSION)" "$(GCC_VERSION)" "$(LINUX_VERSION)" "$(MUSL_VERSION)" "$(BUSYBOX_VERSION)"
-# 	@touch $@
-
-# $(SOURCES):
-# 	@mkdir -p $@
-
-# $(TOOLCHAIN_STAMP): $(DOWNLOAD_STAMP) $(SCRIPTS)/build_binutils.sh config.mk
-# 	@sh $(SCRIPTS)/build_binutils.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(BINUTILS_VERSION)"
-# 	@touch $@
-
-# $(BUSYBOX_STAMP): $(TOOLCHAIN_STAMP) $(SCRIPTS)/build_busybox.sh config.mk
-# 	@sh $(SCRIPTS)/build_busybox.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(BUSYBOX_VERSION)"
-# 	@touch $@
+rootfs: busybox
+	@$(MAKE) -f mk/rootfs.mk TARGET=$(TARGET) VERSION=$(VERSION) rootfs
 
 # $(ROOTFS_STAMP): $(BUSYBOX_STAMP) $(SCRIPTS)/create_rootfs_layout.sh config.mk
 # 	@sh $(SCRIPTS)/create_rootfs_layout.sh "$(TARGET)" "$(PREFIX)" "$(SYSROOT)" "$(ROOTFS)" "$(SOURCES)" "$(BUILD)" "$(VERSION)"
@@ -59,8 +47,7 @@ busybox: toolchain
 # 	@mkdir -p $@
 
 clean:
-	@rm -rf $(BUILDS_DIR) $(LOGS_DIR)
-	@rm -f $(BUSYBOX_STAMP) $(ROOTFS_STAMP)
+	@rm -rf $(BUILDS_DIR) $(LOGS_DIR) $(ROOTFS) $(IMAGE_TARBALL)
 
 distclean: clean
 	@rm -rf $(OUTPUT)
