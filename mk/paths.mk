@@ -27,6 +27,6 @@ LOGS_DIR ?= $(ROOT_DIR)/logs
 OUTPUT_DIR ?= $(ROOT_DIR)/output
 PROGRESS_DIR ?= $(ROOT_DIR)/progress
 SOURCES_DIR ?= $(ROOT_DIR)/sources
-IMAGE_TARBALL :=$(OUTPUT_DIR)/bugleos-minirootfs-$(VERSION)-$(ARCHITECTURE).tar.gz
+IMAGE_TARBALL :=$(OUTPUT_DIR)/bugleos-minirootfs-$(VERSION)-$(TARGET_ARCH).tar.gz
 ROOTFS_DIR ?= $(ROOT_DIR)/rootfs
 TOOLCHAIN_DIR ?= $(ROOT_DIR)/toolchain
