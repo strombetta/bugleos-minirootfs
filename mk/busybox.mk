@@ -77,7 +77,9 @@ $(PROGRESS_DIR)/.busybox-built: $(PROGRESS_DIR)/.busybox-unpacked
 			sed -e 's/CONFIG_RPM=y/# CONFIG_RPM is not set/' -i .config; \
 			sed -e 's/CONFIG_SCRIPTREPLAY=y/# CONFIG_SCRIPTREPLAY is not set/' -i .config; \
 			sed -e 's/CONFIG_SETARCH=y/# CONFIG_SETARCH is not set/' -i .config; \
-			sed -e 's/CONFIG_VI=y/# CONFIG_VI is not set/' -i .config), \
+			sed -e 's/CONFIG_VI=y/# CONFIG_VI is not set/' -i .config; \
+			sed -e 's/CONFIG_SHA1_HWACCEL=y/# CONFIG_SHA1_HWACCEL is not set/' -i .config; \
+			sed -e 's/CONFIG_SHA1_SHAEXT=y/# CONFIG_SHA1_SHAEXT is not set/' -i .config), \
 		busybox-config)
 	$(call do_step,BUILD,busybox, \
 		$(call with_cross_env, \
