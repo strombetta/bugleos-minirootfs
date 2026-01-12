@@ -2,152 +2,30 @@ name: CI
 
 on:
   push:
-    branches: ["main"]
   pull_request:
-  workflow_dispatch:
-  schedule:
-    - cron: "0 2 * * *"
-
-env:
-  MAKEFLAGS: -j2
 
 jobs:
-  determine-version:
+  lint-and-sanity:
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.version }}
     steps:
-      - name: Determine version
-        id: version
-        run: |
-          if [[ "${GITHUB_REF:-}" == refs/tags/* ]]; then
-            VERSION="${GITHUB_REF#refs/tags/}"
-          else
-            VERSION="$(date +'%Y%m%d')"
-          fi
-
-          echo "VERSION=${VERSION}" | tee version.env
-          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-
-      - name: Upload version metadata
-        uses: actions/upload-artifact@v4
-        with:
-          name: version-env
-          path: version.env
-
-  build:
-    needs: determine-version
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        architecture: [x86_64, arm64, riscv64]
-    env:
-      ARCH: ${{ matrix.architecture }}
-      ARCHITECTURE: ${{ matrix.architecture }}
-      VERSION: ${{ needs.determine-version.outputs.version }}
-    steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Write version metadata
-        run: |
-          echo "${VERSION}" > VERSION
-          echo "VERSION=${VERSION}" | tee version.env
-          echo "VERSION_FILE=${GITHUB_WORKSPACE}/version.env" >> "$GITHUB_ENV"
-
-      - name: Install build dependencies
+      - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            build-essential wget bison flex texinfo bc git python3 gawk \
-            libgmp-dev libmpfr-dev libmpc-dev file
+            build-essential bash coreutils tar gzip xz-utils bison flex texinfo gawk file curl wget shellcheck
 
-      - name: Cache downloaded sources
-        uses: actions/cache@v4
-        with:
-          path: sources
-          key: ${{ runner.os }}-${{ matrix.architecture }}-sources-${{ hashFiles('config.mk') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.architecture }}-sources-
-
-      - name: Cache build outputs
-        uses: actions/cache@v4
-        with:
-          path: |
-            toolchain
-            sysroot
-            build
-            output
-          key: ${{ runner.os }}-${{ matrix.architecture }}-build-${{ needs.determine-version.outputs.version }}-${{ hashFiles('config.mk', 'Makefile', 'scripts/**', 'patches/**', 'tests/**') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.architecture }}-build-${{ needs.determine-version.outputs.version }}-
-
-      - name: Download sources
-        run: make download
-
-      - name: Build and run tests
-        env:
-          VERSION_FILE: ${{ github.workspace }}/version.env
-        run: make test
-
-      - name: Persist version metadata with outputs
-        env:
-          OUTPUT: ${{ github.workspace }}/output
+      - name: Lint shell scripts
         run: |
-          mkdir -p "$OUTPUT"
-          cp version.env "$OUTPUT/version.env"
-
-      - name: Upload generated image
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: bugleos-minirootfs-${{ needs.determine-version.outputs.version }}-${{ matrix.architecture }}
-          path: |
-            output/*.tar.gz
-            output/version.env
-          if-no-files-found: ignore
-
-  release:
-    needs: [determine-version, build]
-    if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Download version metadata
-        uses: actions/download-artifact@v4
-        with:
-          name: version-env
-
-      - name: Read version
-        id: version
-        run: |
-          . version.env
-          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-
-      - name: Check existing release
-        id: release-check
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          if gh release view "${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          if ls scripts/*.sh >/dev/null 2>&1; then
+            shellcheck scripts/*.sh
+            bash -n scripts/*.sh
           fi
 
-      - name: Download generated images
-        if: steps.release-check.outputs.exists != 'true'
-        uses: actions/download-artifact@v4
-        with:
-          pattern: bugleos-minirootfs-${{ steps.version.outputs.version }}-*
-          path: artifacts
-          merge-multiple: true
-
-      - name: Create release
-        if: steps.release-check.outputs.exists != 'true'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.version.outputs.version }}
-          name: BugleOS ${{ steps.version.outputs.version }}
-          files: artifacts/*.tar.gz
+      - name: Sanity check build
+        run: |
+          set -euo pipefail
+          make -rR -pn sanity > /dev/null
