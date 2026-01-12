@@ -1,3 +1,4 @@
+#!/bin/sh
 #
 # Copyright (c) Sebastiano Trombetta. All rights reserved.
 #
@@ -19,38 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-include mk/config.mk
-include mk/helpers.mk
-include mk/paths.mk
+set -eu
 
-.DEFAULT_GOAL := image
+unpack() {
+    local file="$1" dest="$2"
 
-.PHONY: toolchain busybox rootfs image clean distclean sanity
+    if [ ! -f "$file" ]; then
+        echo "Error: File $file does not exist."
+        exit 1
+    else
+        tar -xf "$file" -C "$dest"
+    fi
+}
 
-toolchain:
-	@$(MAKE) -f mk/toolchain.mk TARGET=$(TARGET) toolchain
-
-busybox: toolchain
-	@$(MAKE) -f mk/busybox.mk TARGET=$(TARGET) busybox
-
-rootfs: busybox
-	@$(MAKE) -f mk/rootfs.mk TARGET=$(TARGET) VERSION=$(VERSION) rootfs
-
-image: $(IMAGE_TARBALL)
-
-$(IMAGE_TARBALL): rootfs
-	@mkdir -p $(OUTPUT_DIR)
-	@sh -c 'chown -R 0:0 "$(ROOTFS_DIR)" 2>/dev/null || true'
-	@$(TAR) --numeric-owner --owner=0 --group=0 -czf $(IMAGE_TARBALL) -C $(ROOTFS_DIR) .
-
-clean:
-	@rm -rf $(BUILDS_DIR) $(LOGS_DIR) $(ROOTFS_DIR) $(IMAGE_TARBALL)
-
-distclean: clean
-	@rm -rf $(OUTPUT)
-
-mrproper: distclean
-	@rm -rf $(SOURCES_DIR) $(TOOLCHAIN_DIR) $(DOWNLOADS_DIR) $(PROGRESS_DIR)
-
-sanity:
-	@true
+unpack "$1" "$2"

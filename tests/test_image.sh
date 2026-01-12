@@ -4,9 +4,15 @@ set -eu
 OUTPUT=${OUTPUT:-$PWD/output}
 ARCHITECTURE=${ARCHITECTURE:-$(uname -m)}
 VERSION_FILE=${VERSION_FILE:-$OUTPUT/version.env}
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+ROOT_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 
 if [ -z "${VERSION:-}" ] && [ -f "$VERSION_FILE" ]; then
     . "$VERSION_FILE"
+fi
+
+if [ -z "${VERSION:-}" ] && [ -f "$ROOT_DIR/VERSION" ]; then
+    VERSION=$(cat "$ROOT_DIR/VERSION")
 fi
 
 VERSION=${VERSION:-1.0.0}

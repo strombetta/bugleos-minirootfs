@@ -1,5 +1,5 @@
-#
-# Copyright (c) Sebastiano Trombetta. All rights reserved.
+#!/usr/bin/env bash
+# Copyright (c) 2025 Sebastiano Trombetta
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,38 +19,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-include mk/config.mk
-include mk/helpers.mk
-include mk/paths.mk
+set -euo pipefail
 
-.DEFAULT_GOAL := image
+verify_checksum() {
+  local checksum="$1" archive="$2"
+  ( printf '%s  %s\n' "$checksum" "$archive" | sha256sum --quiet -c - )
+}
 
-.PHONY: toolchain busybox rootfs image clean distclean sanity
-
-toolchain:
-	@$(MAKE) -f mk/toolchain.mk TARGET=$(TARGET) toolchain
-
-busybox: toolchain
-	@$(MAKE) -f mk/busybox.mk TARGET=$(TARGET) busybox
-
-rootfs: busybox
-	@$(MAKE) -f mk/rootfs.mk TARGET=$(TARGET) VERSION=$(VERSION) rootfs
-
-image: $(IMAGE_TARBALL)
-
-$(IMAGE_TARBALL): rootfs
-	@mkdir -p $(OUTPUT_DIR)
-	@sh -c 'chown -R 0:0 "$(ROOTFS_DIR)" 2>/dev/null || true'
-	@$(TAR) --numeric-owner --owner=0 --group=0 -czf $(IMAGE_TARBALL) -C $(ROOTFS_DIR) .
-
-clean:
-	@rm -rf $(BUILDS_DIR) $(LOGS_DIR) $(ROOTFS_DIR) $(IMAGE_TARBALL)
-
-distclean: clean
-	@rm -rf $(OUTPUT)
-
-mrproper: distclean
-	@rm -rf $(SOURCES_DIR) $(TOOLCHAIN_DIR) $(DOWNLOADS_DIR) $(PROGRESS_DIR)
-
-sanity:
-	@true
+verify_checksum "$1" "$2"
