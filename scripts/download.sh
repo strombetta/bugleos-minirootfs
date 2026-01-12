@@ -23,7 +23,8 @@
 set -eu
 
 download() {
-    local url="$1" dest="$2"
+    url="$1"
+    dest="$2"
     if [ -f "$dest" ]; then
         echo "Skipping download of $dest (already exists)"
     else
