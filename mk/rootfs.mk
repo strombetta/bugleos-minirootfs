@@ -19,38 +19,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-include mk/config.mk
-include mk/helpers.mk
-include mk/paths.mk
+THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
+include $(abspath $(dir $(THIS_MAKEFILE))/config.mk)
+include $(abspath $(dir $(THIS_MAKEFILE))/helpers.mk)
 
-.DEFAULT_GOAL := image
+ROOTFS_VERSION ?= $(VERSION)
 
-.PHONY: toolchain busybox rootfs image clean distclean sanity
+.PHONY: rootfs ensure-dirs
 
-toolchain:
-	@$(MAKE) -f mk/toolchain.mk TARGET=$(TARGET) toolchain
+rootfs: $(PROGRESS_DIR)/.rootfs-done
 
-busybox: toolchain
-	@$(MAKE) -f mk/busybox.mk TARGET=$(TARGET) busybox
+$(PROGRESS_DIR)/.rootfs-done: $(PROGRESS_DIR)/.rootfs-layout
+	$(Q)touch $@
 
-rootfs: busybox
-	@$(MAKE) -f mk/rootfs.mk TARGET=$(TARGET) VERSION=$(VERSION) rootfs
+$(PROGRESS_DIR)/.rootfs-layout: $(ROOT_DIR)/scripts/create_rootfs_layout.sh | ensure-dirs
+	$(call do_step,LAYOUT,rootfs, \
+		$(call with_host_env, \
+			sh "$(ROOT_DIR)/scripts/create_rootfs_layout.sh" "$(ROOTFS_DIR)" "$(ROOTFS_VERSION)"), \
+		rootfs-layout)
+	$(Q)touch $@
 
-image: $(IMAGE_TARBALL)
-
-$(IMAGE_TARBALL): rootfs
-	@mkdir -p $(OUTPUT_DIR)
-	@sh -c 'chown -R 0:0 "$(ROOTFS_DIR)" 2>/dev/null || true'
-	@$(TAR) --numeric-owner --owner=0 --group=0 -czf $(IMAGE_TARBALL) -C $(ROOTFS_DIR) .
-
-clean:
-	@rm -rf $(BUILDS_DIR) $(LOGS_DIR) $(ROOTFS_DIR) $(IMAGE_TARBALL)
-
-distclean: clean
-	@rm -rf $(OUTPUT)
-
-mrproper: distclean
-	@rm -rf $(SOURCES_DIR) $(TOOLCHAIN_DIR) $(DOWNLOADS_DIR) $(PROGRESS_DIR)
-
-sanity:
-	@true
+ensure-dirs:
+	@mkdir -p $(ROOTFS_DIR) $(LOGS_DIR) $(PROGRESS_DIR)

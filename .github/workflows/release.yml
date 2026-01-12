@@ -1,0 +1,121 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+env:
+  MAKEFLAGS: -j2
+
+jobs:
+  build:
+    name: Build ${{ matrix.arch }}
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - arch: x86_64
+            runs-on: ubuntu-latest
+            target: x86_64-bugleos-linux-musl
+            label: x86_64
+          - arch: aarch64
+            runs-on: ubuntu-24.04-arm
+            target: aarch64-bugleos-linux-musl
+            label: aarch64
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate tag format
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_REF}" =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Tag format valid"
+          else
+            echo "Tag ${GITHUB_REF} is not a valid SemVer tag (vMAJOR.MINOR.PATCH[-prerelease])." >&2
+            exit 1
+          fi
+          echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential wget bison flex texinfo bc git python3 gawk \
+            libgmp-dev libmpfr-dev libmpc-dev file xz-utils bzip2 patch
+
+      - name: Build minirootfs ${{ matrix.arch }}
+        run: |
+          set -euo pipefail
+          echo "${VERSION}" > VERSION
+          make image TARGET=${{ matrix.target }} VERSION="${VERSION}"
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.label }}-logs
+          path: |
+            logs/
+          if-no-files-found: warn
+
+      - name: Package artifacts
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          tarball="bugleos-minirootfs-${VERSION}-${{ matrix.label }}.tar.gz"
+          cp "output/${tarball}" "dist/${tarball}"
+          echo "TARBALL_PATH=dist/${tarball}" >> "$GITHUB_ENV"
+
+      - name: Upload tarball artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.label }}-tarball
+          path: dist/bugleos-minirootfs-${{ env.VERSION }}-${{ matrix.label }}.tar.gz
+          if-no-files-found: error
+
+  publish:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Determine version metadata
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          echo "VERSION=${version}" >> "$GITHUB_ENV"
+          if [[ "${GITHUB_REF_NAME}" == *-* ]]; then
+            echo "PRERELEASE=true" >> "$GITHUB_ENV"
+          else
+            echo "PRERELEASE=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: BugleOS Minirootfs ${{ env.VERSION }}
+          tag_name: ${{ github.ref_name }}
+          draft: false
+          prerelease: ${{ env.PRERELEASE }}
+          body: |
+            Supported architectures:
+            Architecture | Download Link
+            ------------ | -------------
+            x86_64      | [bugleos-minirootfs-${{ env.VERSION }}-x86_64.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/bugleos-minirootfs-${{ env.VERSION }}-x86_64.tar.gz)
+            aarch64     | [bugleos-minirootfs-${{ env.VERSION }}-aarch64.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/bugleos-minirootfs-${{ env.VERSION }}-aarch64.tar.gz)
+          files: |
+            dist/**/bugleos-minirootfs-${{ env.VERSION }}-x86_64.tar.gz
+            dist/**/bugleos-minirootfs-${{ env.VERSION }}-aarch64.tar.gz

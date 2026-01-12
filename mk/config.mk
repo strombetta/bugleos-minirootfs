@@ -19,38 +19,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-include mk/config.mk
-include mk/helpers.mk
-include mk/paths.mk
+MAKEFLAGS += --no-print-directory
 
-.DEFAULT_GOAL := image
+CONFIG_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+ROOT_DIR ?= $(abspath $(CONFIG_DIR)/..)
 
-.PHONY: toolchain busybox rootfs image clean distclean sanity
+VERSION_FILE ?= $(ROOT_DIR)/VERSION
+VERSION ?= $(strip $(shell cat "$(VERSION_FILE)" 2>/dev/null))
+VERSION ?= 0.0.0
 
-toolchain:
-	@$(MAKE) -f mk/toolchain.mk TARGET=$(TARGET) toolchain
+HOST_ARCH := $(shell uname -m)
+HOST_TARGET := $(shell \
+  arch="$(HOST_ARCH)"; \
+  if [ "$$arch" = "x86_64" ] || [ "$$arch" = "amd64" ]; then echo x86_64-bugleos-linux-musl; \
+  elif [ "$$arch" = "aarch64" ] || [ "$$arch" = "arm64" ]; then echo aarch64-bugleos-linux-musl; \
+  else echo; \
+  fi)
+TARGET ?= $(if $(HOST_TARGET),$(HOST_TARGET),$(error Unsupported host architecture '$(HOST_ARCH)'; please set TARGET explicitly))
+TARGET_ARCH := $(firstword $(subst -, ,$(TARGET)))
 
-busybox: toolchain
-	@$(MAKE) -f mk/busybox.mk TARGET=$(TARGET) busybox
+JOBS ?= $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 
-rootfs: busybox
-	@$(MAKE) -f mk/rootfs.mk TARGET=$(TARGET) VERSION=$(VERSION) rootfs
-
-image: $(IMAGE_TARBALL)
-
-$(IMAGE_TARBALL): rootfs
-	@mkdir -p $(OUTPUT_DIR)
-	@sh -c 'chown -R 0:0 "$(ROOTFS_DIR)" 2>/dev/null || true'
-	@$(TAR) --numeric-owner --owner=0 --group=0 -czf $(IMAGE_TARBALL) -C $(ROOTFS_DIR) .
-
-clean:
-	@rm -rf $(BUILDS_DIR) $(LOGS_DIR) $(ROOTFS_DIR) $(IMAGE_TARBALL)
-
-distclean: clean
-	@rm -rf $(OUTPUT)
-
-mrproper: distclean
-	@rm -rf $(SOURCES_DIR) $(TOOLCHAIN_DIR) $(DOWNLOADS_DIR) $(PROGRESS_DIR)
-
-sanity:
-	@true
+TAR ?= tar
+WGET ?= wget
+SHA256SUM ?= sha256sum
