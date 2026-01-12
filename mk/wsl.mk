@@ -19,41 +19,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-include mk/config.mk
-include mk/helpers.mk
-include mk/paths.mk
+THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
+include $(abspath $(dir $(THIS_MAKEFILE))/config.mk)
+include $(abspath $(dir $(THIS_MAKEFILE))/helpers.mk)
 
-.DEFAULT_GOAL := image
+ROOTFS_VERSION ?= $(VERSION)
+WSL_RECIPE_SCRIPT := $(ROOT_DIR)/scripts/recipes/wsl.sh
 
-.PHONY: toolchain busybox rootfs wsl image clean distclean sanity
+.PHONY: wsl ensure-dirs
 
-toolchain:
-	@$(MAKE) -f mk/toolchain.mk TARGET=$(TARGET) toolchain
+wsl: $(WSL_TARBALL)
 
-busybox: toolchain
-	@$(MAKE) -f mk/busybox.mk TARGET=$(TARGET) busybox
-
-rootfs: busybox
-	@$(MAKE) -f mk/rootfs.mk TARGET=$(TARGET) VERSION=$(VERSION) rootfs
-
-wsl: rootfs
-	@$(MAKE) -f mk/wsl.mk TARGET=$(TARGET) VERSION=$(VERSION) wsl
-
-image: $(IMAGE_TARBALL)
-
-$(IMAGE_TARBALL): rootfs
+$(WSL_TARBALL): $(PROGRESS_DIR)/.rootfs-wsl
 	@mkdir -p $(OUTPUT_DIR)
 	@sh -c 'chown -R 0:0 "$(ROOTFS_DIR)" 2>/dev/null || true'
-	@$(TAR) --numeric-owner --owner=0 --group=0 -czf $(IMAGE_TARBALL) -C $(ROOTFS_DIR) .
+	@$(TAR) --numeric-owner --owner=0 --group=0 -czf $(WSL_TARBALL) -C $(ROOTFS_DIR) .
 
-clean:
-	@rm -rf $(BUILDS_DIR) $(LOGS_DIR) $(ROOTFS_DIR) $(IMAGE_TARBALL)
+$(PROGRESS_DIR)/.rootfs-wsl: $(PROGRESS_DIR)/.rootfs-done $(WSL_RECIPE_SCRIPT) | ensure-dirs
+	$(call do_step,RECIPE,wsl, \
+		$(call with_host_env, \
+			sh "$(WSL_RECIPE_SCRIPT)" "$(ROOTFS_DIR)" "$(ROOTFS_VERSION)"), \
+		rootfs-wsl)
+	$(Q)touch $@
 
-distclean: clean
-	@rm -rf $(OUTPUT)
-
-mrproper: distclean
-	@rm -rf $(SOURCES_DIR) $(TOOLCHAIN_DIR) $(DOWNLOADS_DIR) $(PROGRESS_DIR)
-
-sanity:
-	@true
+ensure-dirs:
+	@mkdir -p $(ROOTFS_DIR) $(LOGS_DIR) $(PROGRESS_DIR)
