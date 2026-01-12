@@ -24,7 +24,7 @@ include $(abspath $(dir $(THIS_MAKEFILE))/config.mk)
 include $(abspath $(dir $(THIS_MAKEFILE))/helpers.mk)
 
 ROOTFS_VERSION ?= $(VERSION)
-WSL_RECIPE_SCRIPT := $(ROOT_DIR)/scripts/recipes/wsl.sh
+WSL_RECIPE_SCRIPT := $(ROOT_DIR)/scripts/wsl.sh
 
 .PHONY: wsl ensure-dirs
 
