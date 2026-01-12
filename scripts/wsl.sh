@@ -26,8 +26,8 @@ icon=/usr/lib/wsl/bugleos.ico
 enabled=true
 EOF
 
-cat > "$rootfs_dir/etc/oobe.sh" <<EOF
-#!/bin/bash
+cat > "$rootfs_dir/etc/oobe.sh" <<'EOF'
+#!/bin/sh
 
 set -ue
 
