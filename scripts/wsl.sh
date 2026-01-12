@@ -43,14 +43,11 @@ if getent passwd "$DEFAULT_UID" > /dev/null ; then
 fi
 
 while true; do
-
-  # Prompt from the username
   read -p 'Enter new UNIX username: ' username
 
   # Create the user
-  if /usr/sbin/adduser --uid "$DEFAULT_UID" --quiet --gecos ''  "$username"; then
-
-    if /usr/sbin/usermod "$username" -aG "$DEFAULT_GROUPS"; then
+  if /usr/sbin/adduser -u "$DEFAULT_UID" -g ''  "$username"; then
+    if addgroup "$username" "$DEFAULT_GROUPS"; then
       break
     else
       /usr/sbin/deluser "$username"
@@ -63,3 +60,4 @@ icon_base64='AAABAAEAAQEAAAEAIAAwAAAAFgAAACgAAAABAAAAAgAAAAEAIAAAAAAABAAAAAAAAAA
 printf '%s' "$icon_base64" | base64 -d > "$rootfs_dir/usr/lib/wsl/bugleos.ico"
 
 chmod 0644 "$rootfs_dir/etc/wsl.conf" "$rootfs_dir/etc/wsl-distribution.conf"
+chmod 0755 "$rootfs_dir/etc/oobe.sh"
