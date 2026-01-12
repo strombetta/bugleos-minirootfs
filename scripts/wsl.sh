@@ -14,6 +14,7 @@ EOF
 
 cat > "$rootfs_dir/etc/wsl-distribution.conf" <<EOF
 [oobe]
+command = /etc/oobe.sh
 defaultUid = 1000
 defaultName=bugleos
 
@@ -25,7 +26,7 @@ icon=/usr/lib/wsl/bugleos.ico
 enabled=true
 EOF
 
-cat > <<EOF
+cat > "$rootfs_dir/etc/oobe.sh" <<EOF
 #!/bin/bash
 
 set -ue
