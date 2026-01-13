@@ -25,7 +25,7 @@ include mk/paths.mk
 
 .DEFAULT_GOAL := image
 
-.PHONY: toolchain busybox rootfs image clean distclean sanity
+.PHONY: toolchain busybox rootfs wsl image clean distclean sanity
 
 toolchain:
 	@$(MAKE) -f mk/toolchain.mk TARGET=$(TARGET) toolchain
@@ -35,6 +35,9 @@ busybox: toolchain
 
 rootfs: busybox
 	@$(MAKE) -f mk/rootfs.mk TARGET=$(TARGET) VERSION=$(VERSION) rootfs
+
+wsl: rootfs
+	@$(MAKE) -f mk/wsl.mk TARGET=$(TARGET) VERSION=$(VERSION) wsl
 
 image: $(IMAGE_TARBALL)
 
