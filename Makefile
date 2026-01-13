@@ -47,7 +47,7 @@ $(IMAGE_TARBALL): rootfs
 	@$(TAR) --numeric-owner --owner=0 --group=0 -czf $(IMAGE_TARBALL) -C $(ROOTFS_DIR) .
 
 clean:
-	@rm -rf $(BUILDS_DIR) $(LOGS_DIR) $(ROOTFS_DIR) $(IMAGE_TARBALL)
+	@rm -rf $(BUILDS_DIR) $(LOGS_DIR) $(ROOTFS_DIR) $(IMAGE_TARBALL) $(WSL_TARBALL)
 
 distclean: clean
 	@rm -rf $(OUTPUT)
