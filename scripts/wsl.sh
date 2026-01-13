@@ -14,7 +14,7 @@ EOF
 
 cat > "$rootfs_dir/etc/wsl-distribution.conf" <<EOF
 [oobe]
-command=/etc/oobe.sh
+command=/usr/lib/wsl/wsl-oobe.sh
 defaultUid=1000
 defaultName=BugleOS
 
@@ -26,7 +26,7 @@ icon=/usr/lib/wsl/bugleos.ico
 enabled=true
 EOF
 
-cat > "$rootfs_dir/etc/oobe.sh" <<'EOF'
+cat > "$rootfs_dir/usr/lib/wsl/wsl-oobe.sh" <<'EOF'
 #!/bin/sh
 set -eu
 
@@ -78,12 +78,7 @@ create_regular_user() {
         ;;
     esac
 
-    # BusyBox adduser:
-    # -D : don't assign password / don't prompt
-    # -u : uid
-    # -s : shell (set one explicitly to avoid /bin/false defaults in some configs)
-    # -h : home
-    if ! adduser -D -u "$DEFAULT_UID" -s /bin/sh -h "/home/$username" "$username" >/dev/null 2>&1; then
+    if ! adduser -u "$DEFAULT_UID" -s /bin/sh -h "/home/$username" "$username" >/dev/null 2>&1; then
       echo "Failed to create user '$username'. Please choose a different name."
       continue
     fi
@@ -190,4 +185,4 @@ icon_base64='AAABAAEAAQEAAAEAIAAwAAAAFgAAACgAAAABAAAAAgAAAAEAIAAAAAAABAAAAAAAAAA
 printf '%s' "$icon_base64" | base64 -d > "$rootfs_dir/usr/lib/wsl/bugleos.ico"
 
 chmod 0644 "$rootfs_dir/etc/wsl.conf" "$rootfs_dir/etc/wsl-distribution.conf"
-chmod 0755 "$rootfs_dir/etc/oobe.sh"
+chmod 0755 "$rootfs_dir/usr/lib/wsl/wsl-oobe.sh"
