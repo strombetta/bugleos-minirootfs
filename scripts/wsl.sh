@@ -2,7 +2,7 @@
 set -eu
 
 rootfs_dir="${1:?rootfs dir required}"
-script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+script_dir=$(CDPATH=cd -- "$(dirname -- "$0")" && pwd)
 
 umask 022
 
