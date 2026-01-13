@@ -162,12 +162,7 @@ win_username=$(powershell_env "UserName")
 # replace any potential whitespaces with underscores.
 win_username=$(printf "%s" "$win_username" | sed 's/ /_/g')
 
-# Wait for cloud-init to finish if systemd and its service is enabled
-# by running the script located at the same dir as this one.
-this_dir=$(cd "$(dirname "$0")" && pwd)
-. "$this_dir/wait-for-cloud-init"
-
-# Check if there is a pre-provisioned users (pre-baked on the rootfs or created by cloud-init).
+# Check if there is a pre-provisioned users (pre-baked on the rootfs).
 user_id=$(get_first_interactive_uid)
 
 # If we don’t have a non system user, let’s create it.
