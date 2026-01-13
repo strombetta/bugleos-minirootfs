@@ -12,10 +12,16 @@ chmod 1777 "$rootfs_dir/tmp"
 
 cat > "$rootfs_dir/etc/passwd" <<'EOF'
 root:x:0:0:root:/root:/bin/sh
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
 EOF
 
 cat > "$rootfs_dir/etc/group" <<'EOF'
 root:x:0:
+bin:x:1:
+daemon:x:2:
+tty:x:5:
+users:x:100:
 EOF
 
 cat > "$rootfs_dir/etc/hosts" <<'EOF'
