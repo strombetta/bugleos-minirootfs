@@ -92,7 +92,7 @@ create_regular_user() {
     for g in $DEFAULT_GROUPS; do
       ensure_group "$g" || { ok=0; break; }
       # BusyBox addgroup syntax is: addgroup GROUP [USER]
-      addgroup "$g" "$username" >/dev/null 2>&1 || { ok=0; break; }
+      addgroup "$username" "$g" >/dev/null 2>&1 || { ok=0; break; }
     done
 
     [ "$ok" -eq 1 ] && break
