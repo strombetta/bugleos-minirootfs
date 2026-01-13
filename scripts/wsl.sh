@@ -33,30 +33,18 @@ set -eu
 DEFAULT_UID=1000
 DEFAULT_GROUPS="adm cdrom sudo dip plugdev"
 
-echo "Please create a default UNIX user account. The username does not need to match your Windows username."
-echo "For more information visit: https://aka.ms/wslusers"
-
-if awk -F: -v uid="$DEFAULT_UID" '($3==uid){found=1} END{exit(found?0:1)}' /etc/passwd 2>/dev/null; then
-  echo "User account (uid=$DEFAULT_UID) already exists, skipping creation"
-  exit 0
-fi
-
-# Basic username validation: lowercase start, then lowercase/digits/_/-
-is_valid_username() {
-  case "$1" in
-    ""|*[!a-z0-9_-]*)
-      return 1
-      ;;
-  esac
-  case "$1" in
-    [a-z]*)
-      return 0
-      ;;
-  esac
-  return 1
+# command_not_found_handle is a noop function that prevents printing error messages
+# if WSL interop is disabled.
+command_not_found_handle() {
+  :
 }
 
-# Create group if missing
+# get_first_interactive_uid returns first interactive non system user uid with uid >=1000.
+get_first_interactive_uid() {
+  awk -F: '($3 >= 1000) && ($7 !~ /(nologin|false|sync)/) { print $3; exit }' /etc/passwd
+}
+
+# Create group if missing.
 ensure_group() {
   grp="$1"
   if ! grep -q "^${grp}:" /etc/group 2>/dev/null; then
@@ -65,59 +53,45 @@ ensure_group() {
   return 0
 }
 
-# Rollback user creation in a BusyBox-friendly way (no deluser guaranteed)
-rollback_user() {
-  u="$1"
-  # Remove from passwd/shadow
-  if [ -f /etc/passwd ]; then
-    grep -v "^${u}:" /etc/passwd > /etc/passwd.tmp && mv /etc/passwd.tmp /etc/passwd
-  fi
-  if [ -f /etc/shadow ]; then
-    grep -v "^${u}:" /etc/shadow > /etc/shadow.tmp && mv /etc/shadow.tmp /etc/shadow
-  fi
-  # Remove from group/gshadow member lists
-  if [ -f /etc/group ]; then
-    awk -F: -v u="$u" 'BEGIN{OFS=":"}
-      {
-        n=split($4,a,","); out=""
-        for(i=1;i<=n;i++){ if(a[i] != "" && a[i] != u){ out=(out==""?a[i]:out","a[i]) } }
-        $4=out; print
-      }' /etc/group > /etc/group.tmp && mv /etc/group.tmp /etc/group
-  fi
-  if [ -f /etc/gshadow ]; then
-    awk -F: -v u="$u" 'BEGIN{OFS=":"}
-      {
-        n=split($4,a,","); out=""
-        for(i=1;i<=n;i++){ if(a[i] != "" && a[i] != u){ out=(out==""?a[i]:out","a[i]) } }
-        $4=out; print
-      }' /etc/gshadow > /etc/gshadow.tmp && mv /etc/gshadow.tmp /etc/gshadow
-  fi
-}
+# create_regular_user prompts user for a username and assign default WSL permissions.
+# First argument is the prefilled username.
+create_regular_user() {
+  default_username="$1"
 
-while :; do
-  printf "Enter new UNIX username: "
-  IFS= read -r username
+  # Filter the prefilled username to remove invalid characters.
+  default_username=$(printf "%s" "$default_username" | sed 's/[^a-z0-9_-]//g')
+  # It should start with a character or _.
+  default_username=$(printf "%s" "$default_username" | sed 's/^[^a-z_]*//')
 
-  if ! is_valid_username "$username"; then
-    echo "Invalid username. Allowed: lowercase letters, digits, underscore, hyphen; must start with a letter."
-    continue
-  fi
+  while :; do
+    if [ -n "$default_username" ]; then
+      printf "Create a default Unix user account [%s]: " "$default_username"
+    else
+      printf "Create a default Unix user account: "
+    fi
+    IFS= read -r username
+    if [ -z "$username" ]; then
+      username="$default_username"
+    fi
 
-  if grep -q "^${username}:" /etc/passwd 2>/dev/null; then
-    echo "User '$username' already exists. Choose another name."
-    continue
-  fi
+    case "$username" in
+      ""|*[!a-z0-9_-]*)
+        echo "Invalid username. A valid username must start with a lowercase letter or underscore, and can contain lowercase letters, digits, underscores, and dashes."
+        continue
+        ;;
+      [a-z_]*)
+        ;;
+      *)
+        echo "Invalid username. A valid username must start with a lowercase letter or underscore, and can contain lowercase letters, digits, underscores, and dashes."
+        continue
+        ;;
+    esac
 
-  # Ensure user's primary group exists
-  if ! ensure_group "$username"; then
-    echo "Failed to create/ensure primary group '$username'."
-    continue
-  fi
+    if ! adduser -u "$DEFAULT_UID" "$username" >/dev/null 2>&1; then
+      echo "Failed to create user '$username'. Please choose a different name."
+      continue
+    fi
 
-  # BusyBox adduser: commonly
-  #   adduser -u UID -G GROUP USER
-  # Some builds also support -s SHELL.
-  if adduser -u "$DEFAULT_UID" -G "$username" "$username" >/dev/null 2>&1; then
     ok=1
     for g in $DEFAULT_GROUPS; do
       ensure_group "$g" || { ok=0; break; }
@@ -125,16 +99,91 @@ while :; do
     done
 
     if [ "$ok" -eq 1 ]; then
-      echo "User '$username' created with uid=$DEFAULT_UID."
       break
     fi
 
-    echo "Failed to add user to one or more groups; rolling back."
-    rollback_user "$username"
-  else
-    echo "User creation failed; retry."
+    echo "Failed to add '$username' to default groups. Attempting cleanup."
+    if command -v deluser >/dev/null 2>&1; then
+      deluser "$username" >/dev/null 2>&1 || true
+    else
+      if [ -f /etc/passwd ]; then
+        grep -v "^${username}:" /etc/passwd > /etc/passwd.tmp && mv /etc/passwd.tmp /etc/passwd
+      fi
+      if [ -f /etc/shadow ]; then
+        grep -v "^${username}:" /etc/shadow > /etc/shadow.tmp && mv /etc/shadow.tmp /etc/shadow
+      fi
+    fi
+  done
+}
+
+# set_user_as_default sets the given username as the default user in the wsl.conf configuration.
+# It will only set it if there is no existing default under the [user] section.
+set_user_as_default() {
+  username="$1"
+
+  wsl_conf="/etc/wsl.conf"
+  touch "$wsl_conf"
+
+  # Append [user] section with default if they don't exist.
+  if ! grep -q "^\[user\]" "$wsl_conf"; then
+    printf "\n[user]\ndefault=%s\n" "$username" >> "$wsl_conf"
+    return
   fi
-done
+
+  # If default is missing from the user section, append it to it.
+  if ! sed -n '/^\[user\]/,/^\[/{/^[[:space:]]*default[[:space:]]*=/p}' "$wsl_conf" | grep -q .; then
+    sed -i "/^\[user\]/a\\
+default=$username" "$wsl_conf"
+  fi
+}
+
+# powershell_env outputs the contents of PowerShell.exe environment variables $Env:<ARG>
+# encoded in UTF-8.
+powershell_env() {
+  if [ "$#" -ne 1 ]; then
+    echo "powershell_env: expected 1 argument, got $# ."
+    return 1
+  fi
+  var="$1"
+
+  ret=$(powershell.exe -NoProfile -Command '& {
+                            [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+                            $Env:'"$var"'}') 2>/dev/null || true
+  # strip control chars like \r and \n
+  ret=${ret%%[[:cntrl:]]}
+  echo "$ret"
+}
+
+echo "Provisioning the new WSL instance $WSL_DISTRO_NAME"
+echo "This might take a while..."
+
+# Read the Windows user name.
+win_username=$(powershell_env "UserName")
+# replace any potential whitespaces with underscores.
+win_username=$(printf "%s" "$win_username" | sed 's/ /_/g')
+
+# Wait for cloud-init to finish if systemd and its service is enabled
+# by running the script located at the same dir as this one.
+this_dir=$(cd "$(dirname "$0")" && pwd)
+. "$this_dir/wait-for-cloud-init"
+
+# Check if there is a pre-provisioned users (pre-baked on the rootfs or created by cloud-init).
+user_id=$(get_first_interactive_uid)
+
+# If we don’t have a non system user, let’s create it.
+if [ -z "$user_id" ]; then
+  create_regular_user "$win_username"
+
+  user_id=$(get_first_interactive_uid)
+  if [ -z "$user_id" ]; then
+    echo "Failed to create a regular user account"
+    exit 1
+  fi
+fi
+
+# Set the newly created user as the WSL default.
+username=$(awk -F: -v uid="$user_id" '($3==uid){print $1; exit}' /etc/passwd)
+set_user_as_default "$username"
 EOF
 
 
