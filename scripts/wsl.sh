@@ -2,6 +2,7 @@
 set -eu
 
 rootfs_dir="${1:?rootfs dir required}"
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 
 umask 022
 
@@ -181,7 +182,7 @@ username="$(awk -F: -v uid="$user_id" '($3==uid){print $1; exit}' /etc/passwd)"
 set_user_as_default "$username"
 EOF
 
-mv wsl/bugleos.ico "$rootfs_dir/usr/lib/wsl/bugleos.ico"
+cp "$script_dir/bugleos.ico" "$rootfs_dir/usr/lib/wsl/bugleos.ico"
 
 chmod 0644 "$rootfs_dir/etc/wsl.conf" "$rootfs_dir/etc/wsl-distribution.conf"
 chmod 0755 "$rootfs_dir/usr/lib/wsl/wsl-oobe.sh"

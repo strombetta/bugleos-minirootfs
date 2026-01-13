@@ -36,7 +36,7 @@ $(WSL_TARBALL): $(PROGRESS_DIR)/.rootfs-wsl
 	@$(TAR) --numeric-owner --owner=0 --group=0 -czf $(WSL_TARBALL) -C $(ROOTFS_DIR) .
 
 $(PROGRESS_DIR)/.rootfs-wsl: $(PROGRESS_DIR)/.rootfs-done $(WSL_RECIPE_SCRIPT) | ensure-dirs
-	$(call do_step,RECIPE,wsl, \
+	$(call do_step,CREATE,wsl, \
 		$(call with_host_env, \
 			sh "$(WSL_RECIPE_SCRIPT)" "$(ROOTFS_DIR)" "$(ROOTFS_VERSION)"), \
 		rootfs-wsl)
