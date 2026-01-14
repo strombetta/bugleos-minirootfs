@@ -11,14 +11,6 @@ mkdir -p "$rootfs_dir/etc" "$rootfs_dir/usr/lib/wsl"
 cat > "$rootfs_dir/etc/wsl.conf" <<'EOF'
 [boot]
 systemd=false
-
-[interop]
-enabled=true
-appendWindowsPath=false
-
-[automount]
-enabled=false
-options=metadata,umask=22,fmask=11
 EOF
 
 cat > "$rootfs_dir/etc/wsl-distribution.conf" <<EOF
