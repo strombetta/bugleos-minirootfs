@@ -11,6 +11,14 @@ mkdir -p "$rootfs_dir/etc" "$rootfs_dir/usr/lib/wsl"
 cat > "$rootfs_dir/etc/wsl.conf" <<'EOF'
 [boot]
 systemd=false
+
+[interop]
+enabled=true
+appendWindowsPath=false
+
+[automount]
+enabled=true
+options=metadata,umask=22,fmask=11
 EOF
 
 cat > "$rootfs_dir/etc/wsl-distribution.conf" <<EOF
@@ -27,7 +35,7 @@ icon=/usr/lib/wsl/bugleos.ico
 enabled=true
 EOF
 
-cat > "$rootfs_dir/usr/lib/wsl/wsl-oobe.sh" <<'EOF'
+cat <<'EOF' | tr -d '\r' > "$rootfs_dir/usr/lib/wsl/wsl-oobe.sh"
 #!/bin/sh
 set -eu
 
@@ -181,8 +189,6 @@ fi
 username="$(awk -F: -v uid="$user_id" '($3==uid){print $1; exit}' /etc/passwd)"
 set_user_as_default "$username"
 EOF
-tr -d '\\r' < "$rootfs_dir/usr/lib/wsl/wsl-oobe.sh" > "$rootfs_dir/usr/lib/wsl/wsl-oobe.sh.tmp"
-mv "$rootfs_dir/usr/lib/wsl/wsl-oobe.sh.tmp" "$rootfs_dir/usr/lib/wsl/wsl-oobe.sh"
 
 cp "$script_dir/bugleos.ico" "$rootfs_dir/usr/lib/wsl/bugleos.ico"
 

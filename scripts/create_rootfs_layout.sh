@@ -4,7 +4,7 @@ set -eu
 rootfs_dir="${1:?rootfs dir required}"
 version="${2:?rootfs version required}"
 
-for dir in bin sbin usr/bin usr/sbin dev proc sys tmp mnt etc etc/profile.d etc/skel var var/run home; do
+for dir in bin sbin usr/bin usr/sbin dev proc sys tmp mnt etc etc/profile.d etc/skel var var/run home root; do
 	mkdir -p "$rootfs_dir/$dir"
 done
 
@@ -42,13 +42,11 @@ shadow: files
 hosts: files dns
 EOF
 
-cat > "$rootfs_dir/etc/fstab" <<'EOF'
+cat <<'EOF' | tr -d '\r' > "$rootfs_dir/etc/fstab"
 proc            /proc   proc    defaults                0       0
 sysfs           /sys    sysfs   defaults                0       0
 tmpfs           /tmp    tmpfs   defaults,nosuid,nodev   0       0
 EOF
-tr -d '\\r' < "$rootfs_dir/etc/fstab" > "$rootfs_dir/etc/fstab.tmp"
-mv "$rootfs_dir/etc/fstab.tmp" "$rootfs_dir/etc/fstab"
 
 cat > "$rootfs_dir/etc/inittab" <<'EOF'
 ::sysinit:/bin/mount -a
@@ -86,15 +84,10 @@ fi
 EOF
 
 cat > "$rootfs_dir/etc/os-release" <<EOF
-PRETTY_NAME="BugleOS GNUL/Linux"
 NAME="BugleOS"
-VERSION_ID="$version"
-VERSION="$version"
-VERSION_CODENAME="BugleOS Core"
 ID=bugleos
-HOME_URL="https://www.bugleos.com/"
-SUPPORT_URL="https://support.bugleos.com/"
-BUG_REPORT="https://bugs.bugleos.com/"
+PRETTY_NAME="BugleOS v$version"
+VERSION_ID="$version"
 EOF
 
 cat > "$rootfs_dir/etc/profile.d/motd.sh" <<EOF
