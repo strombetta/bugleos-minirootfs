@@ -1,4 +1,4 @@
-#!/bin/sh
+﻿#!/bin/sh
 set -eu
 
 rootfs_dir="${1:?rootfs dir required}"
@@ -23,6 +23,12 @@ daemon:x:2:
 tty:x:5:
 users:x:100:
 EOF
+
+cat > "$rootfs_dir/etc/shadow" <<'EOF'
+root:*:0:0:99999:7:::
+EOF
+
+chmod 0600 "$rootfs_dir/etc/shadow"
 
 cat > "$rootfs_dir/etc/hosts" <<'EOF'
 127.0.0.1   localhost
