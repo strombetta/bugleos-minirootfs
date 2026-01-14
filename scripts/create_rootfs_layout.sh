@@ -4,7 +4,7 @@ set -eu
 rootfs_dir="${1:?rootfs dir required}"
 version="${2:?rootfs version required}"
 
-for dir in bin sbin usr/bin usr/sbin dev proc sys tmp etc etc/profile.d etc/skel var var/run home; do
+for dir in bin sbin usr/bin usr/sbin dev proc sys tmp mnt etc etc/profile.d etc/skel var var/run home; do
 	mkdir -p "$rootfs_dir/$dir"
 done
 
@@ -47,6 +47,8 @@ proc            /proc   proc    defaults                0       0
 sysfs           /sys    sysfs   defaults                0       0
 tmpfs           /tmp    tmpfs   defaults,nosuid,nodev   0       0
 EOF
+tr -d '\\r' < "$rootfs_dir/etc/fstab" > "$rootfs_dir/etc/fstab.tmp"
+mv "$rootfs_dir/etc/fstab.tmp" "$rootfs_dir/etc/fstab"
 
 cat > "$rootfs_dir/etc/inittab" <<'EOF'
 ::sysinit:/bin/mount -a

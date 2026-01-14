@@ -181,6 +181,8 @@ fi
 username="$(awk -F: -v uid="$user_id" '($3==uid){print $1; exit}' /etc/passwd)"
 set_user_as_default "$username"
 EOF
+tr -d '\\r' < "$rootfs_dir/usr/lib/wsl/wsl-oobe.sh" > "$rootfs_dir/usr/lib/wsl/wsl-oobe.sh.tmp"
+mv "$rootfs_dir/usr/lib/wsl/wsl-oobe.sh.tmp" "$rootfs_dir/usr/lib/wsl/wsl-oobe.sh"
 
 cp "$script_dir/bugleos.ico" "$rootfs_dir/usr/lib/wsl/bugleos.ico"
 
