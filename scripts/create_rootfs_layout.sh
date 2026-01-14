@@ -65,11 +65,6 @@ fi
 EOF
 
 cat > "$rootfs_dir/etc/skel/.profile" <<'EOF'
-# Source system-wide profile.
-if [ -f /etc/profile ]; then
-    . /etc/profile
-fi
-
 # Load per-user shell config for interactive shells.
 export ENV="$HOME/.shrc"
 EOF
