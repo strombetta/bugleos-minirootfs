@@ -1,4 +1,4 @@
-﻿#!/bin/sh
+#!/bin/sh
 set -eu
 
 rootfs_dir="${1:?rootfs dir required}"
