@@ -17,7 +17,7 @@ enabled=true
 appendWindowsPath=false
 
 [automount]
-enabled=true
+enabled=false
 options=metadata,umask=22,fmask=11
 EOF
 
