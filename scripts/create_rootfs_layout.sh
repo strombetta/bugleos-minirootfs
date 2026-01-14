@@ -4,7 +4,7 @@ set -eu
 rootfs_dir="${1:?rootfs dir required}"
 version="${2:?rootfs version required}"
 
-for dir in bin sbin usr/bin usr/sbin dev proc sys tmp etc etc/profile.d var var/run home; do
+for dir in bin sbin usr/bin usr/sbin dev proc sys tmp etc etc/profile.d etc/skel var var/run home; do
 	mkdir -p "$rootfs_dir/$dir"
 done
 
@@ -64,11 +64,35 @@ if [ -d /etc/profile.d ]; then
 fi
 EOF
 
+cat > "$rootfs_dir/etc/skel/.profile" <<'EOF'
+# Source system-wide profile.
+if [ -f /etc/profile ]; then
+    . /etc/profile
+fi
+
+# Load per-user shell config for interactive shells.
+export ENV="$HOME/.shrc"
+EOF
+
+cat > "$rootfs_dir/etc/skel/.shrc" <<'EOF'
+# Only run in interactive shells.
+[ -t 0 ] || return 0
+
+if [ -r /etc/profile.d/prompt.sh ]; then
+    . /etc/profile.d/prompt.sh
+fi
+EOF
+
 cat > "$rootfs_dir/etc/os-release" <<EOF
+PRETTY_NAME="BugleOS GNUL/Linux"
 NAME="BugleOS"
-ID=bugleos
-PRETTY_NAME="BugleOS v$version"
 VERSION_ID="$version"
+VERSION="$version"
+VERSION_CODENAME="BugleOS Core"
+ID=bugleos
+HOME_URL="https://www.bugleos.com/"
+SUPPORT_URL="https://support.bugleos.com/"
+BUG_REPORT="https://bugs.bugleos.com/"
 EOF
 
 cat > "$rootfs_dir/etc/profile.d/motd.sh" <<EOF
