@@ -23,7 +23,9 @@
 set -eu
 
 verify_checksum() {
-  local checksum="$1" archive="$2"
+  checksum="$1"
+  archive="$2"
+  
   ( printf '%s  %s\n' "$checksum" "$archive" | sha256sum --quiet -c - )
 }
 
