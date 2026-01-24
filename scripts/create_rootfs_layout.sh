@@ -84,6 +84,42 @@ ID=bugleos
 PRETTY_NAME="BugleOS v$version"
 VERSION_ID="$version"
 EOF
+cat > "$rootfs_dir/etc/locale.conf" <<'EOF'
+LANG=C
+LC_ALL=C
+EOF
+
+cat > "$rootfs_dir/etc/timezone" <<'EOF'
+UTC
+EOF
+
+cat > "$rootfs_dir/etc/TZ" <<'EOF'
+UTC
+EOF
+
+cat > "$rootfs_dir/etc/profile.d/locale.sh" <<'EOF'
+#!/bin/sh
+if [ -r /etc/locale.conf ]; then
+    . /etc/locale.conf
+fi
+if [ -z "${LANG:-}" ]; then
+    LANG=C
+fi
+export LANG
+if [ -n "${LC_ALL:-}" ]; then
+    export LC_ALL
+fi
+EOF
+
+cat > "$rootfs_dir/etc/profile.d/timezone.sh" <<'EOF'
+#!/bin/sh
+if [ -z "${TZ:-}" ] && [ -r /etc/timezone ]; then
+    TZ=$(cat /etc/timezone 2>/dev/null || true)
+    if [ -n "$TZ" ]; then
+        export TZ
+    fi
+fi
+EOF
 
 cat > "$rootfs_dir/etc/profile.d/motd.sh" <<EOF
 #!/bin/sh
